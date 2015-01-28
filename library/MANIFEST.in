@@ -1,0 +1,8 @@
+include explorerhat.py
+include analog.py
+include captouch.py
+include README.md
+include README.txt
+include CHANGELOG.txt
+include LICENSE.txt
+include setup.py

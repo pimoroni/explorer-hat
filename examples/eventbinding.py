@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import explorerhat
 
 def toggle_light(channel, event):
