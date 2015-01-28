@@ -2,6 +2,22 @@
 
 This library is based on the Pibrella framework, you might find much of it familiar. It's got added motors, capacitive touch and analog input though!
 
+## Pre-requisites
+
+Explorer HAT and Explorer HAT Pro both require i2c, the easiest way to enable it is with our simple script:
+
+```bash
+curl get.pimoroni.com/i2c | bash
+```
+
+They also require the SMBus Python module, which you'll need to install like so:
+
+```bash
+sudo apt-get install python-smbus
+```
+
+## Getting Started
+
 To get started, start up a Python interactive shell:
 
 ```bash
