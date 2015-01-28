@@ -251,16 +251,32 @@ class Motor(object):
     type = 'Motor'
     
     def __init__(self, pin_fw, pin_bw):
+        self._invert = False
         self.pin_fw = pin_fw
         self.pin_bw = pin_bw
         GPIO.setup(self.pin_fw, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.pin_bw, GPIO.OUT, initial=GPIO.LOW)
 
+    def invert(self):
+        self._invert = not self._invert
+
     def forwards(self):
+        if self._invert:
+            self._backwards()
+        else:
+            self._forwards()
+
+    def backwards(self):
+        if self._invert:
+            self._forwards()
+        else:
+            self._backwards()
+
+    def _forwards(self):
         GPIO.output(self.pin_fw, GPIO.LOW)
         GPIO.output(self.pin_bw, GPIO.HIGH)
 
-    def backwards(self):
+    def _backwards(self):
         GPIO.output(self.pin_fw, GPIO.HIGH)
         GPIO.output(self.pin_bw, GPIO.LOW)
 
