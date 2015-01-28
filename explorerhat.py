@@ -9,15 +9,6 @@ import RPi.GPIO as GPIO
 
 explorer_pro = False
 
-try:
-    import analog as _analog
-    print("Explorer HAT Pro detected...")
-    explorer_pro = True
-except ImportError, IOError:
-    print("Explorer HAT Basic detected...")
-    print("If this is incorrect, please check your i2c settings!")
-    explorer_pro = False
-
 # Assume A+, B+ and no funny business
 
 # Onboard LEDs above 1, 2, 3, 4
@@ -559,8 +550,6 @@ class AnalogInput(object):
     def read(self):
         return _analog.read_se_adc(self.channel)
 
-cap = captouch.Cap1208()
-
 class CapTouchInput(object):
     type = 'Cap Touch Input'
     
@@ -655,9 +644,12 @@ def explorerhat_exit():
     print("\nExplorer HAT exiting cleanly, please wait...")
 
     print("Stopping flashy things...")
-    output.stop()
-    input.stop()
-    light.stop()
+    try:
+        output.stop()
+        input.stop()
+        light.stop()
+    except AttributeError:
+        pass
 
     print("Stopping user tasks...")
     async_stop_all()
@@ -669,6 +661,20 @@ def explorerhat_exit():
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
+
+try:
+    cap = captouch.Cap1208()
+except IOError:
+    exit("Explorer HAT not found...\nHave you enabled i2c?")
+    
+import analog as _analog
+if _analog.adc_available:
+    print("Explorer HAT Pro detected...")
+    explorer_pro = True
+else:    
+    print("Explorer HAT Basic detected...")
+    print("If this is incorrect, please check your i2c settings!")
+    explorer_pro = False
 
 atexit.register(explorerhat_exit)
 

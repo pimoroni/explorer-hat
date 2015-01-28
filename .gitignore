@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.swp
+dist/
+sdist/
+env/
+build/
+develop-eggs/
+eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+
+pip-log.txt
+pip-delete-this-directory.txt

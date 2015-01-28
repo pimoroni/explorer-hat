@@ -1,5 +1,7 @@
 import time
 
+adc_available = True
+
 try:
     from smbus import SMBus
 except ImportError:
@@ -46,3 +48,8 @@ def read_se_adc(channel=1, programmable_gain=PGA_6_144V, samples_per_second=1600
 	data = i2c.read_i2c_block_data(address, REG_CONV)
 
 	return (((data[0] << 8) | data[1]) >> 4 ) * programmable_gain / 2048.0 / 1000.0
+
+try:
+    read_se_adc()
+except IOError:
+    adc_available = False
