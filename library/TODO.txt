@@ -6,6 +6,8 @@
 
 ##Touch
 
+* Investigate "stuck" touch inputs
+* Fix multi-touch support switch
 * Add basic support for touch settings such as repeat rate
 
 ##Analogue

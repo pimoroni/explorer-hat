@@ -212,6 +212,9 @@ class Cap1xxx():
         # it sane defaults anyway
         self.enable_repeat(0b00000000)
         self.enable_multitouch(True)
+
+        # Temporary fudge to force multi-touch support
+        self._write_byte(R_MTOUCH_CONFIG, 0b00000000)
         self.set_hold_delay(210)
         self.set_repeat_rate(210)
         
