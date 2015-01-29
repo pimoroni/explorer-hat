@@ -42,6 +42,8 @@ PULSE_FREQUENCY = 100
 
 DEBOUNCE_TIME = 20
 
+CAP_PRODUCT_ID = 107
+
 ## Basic stoppable thread wrapper
 #
 #  Adds Event for stopping the execution loop
@@ -678,9 +680,9 @@ def explorerhat_exit():
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-try:
-    cap = captouch.Cap1208()
-except IOError:
+
+cap = captouch.Cap1208()
+if not cap._get_product_id() == CAP_PRODUCT_ID:
     exit("Explorer HAT not found...\nHave you enabled i2c?")
     
 import analog as _analog
