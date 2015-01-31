@@ -65,6 +65,7 @@ explorerhat.touch.one.pressed(ogai)
 ```
 
 
-# Technical Information
+# Documentation
 
+* [Explorer HAT Function Reference](/REFERENCE.md)
 * [Explorer HAT Pinout](/PINS.md)
