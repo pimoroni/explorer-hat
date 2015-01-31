@@ -24,6 +24,12 @@ Each input has a number of functions for both reading its state and binding even
 * pressed( handler_function ) - Calls "handler_function" whenever the input is touched
 * released( handler_funtion ) - Calls "handler_function" whenever the input is released
 * held( handler_function ) - Calls "handler_function" repeatedly while the input is held down ( default once every 540ms )
+* 
+
+**Unimplemented/TODO**
+
+* repeat_rate() - Configure repeat rate of input(s)
+* sensitivity() - Adjust the sensitivity, from touch sensitive to proximity or fruit
 
 ### Input
 
