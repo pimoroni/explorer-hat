@@ -61,7 +61,7 @@ Or you can wait for a touch on one of the buttons:
 import explorerhat
 def ohai(channel, event):
     print("Ohai! I got a touch on button: {}".format(channel))
-explorerhat.touch.one.pressed(ogai)
+explorerhat.touch.one.pressed(ohai)
 ```
 
 
