@@ -44,6 +44,12 @@ DEBOUNCE_TIME = 20
 
 CAP_PRODUCT_ID = 107
 
+
+
+
+def help(topic = None):
+    return _help[topic]
+
 ## Basic stoppable thread wrapper
 #
 #  Adds Event for stopping the execution loop
@@ -140,10 +146,15 @@ class Pins:
         self._all = {}
         self._aliases = {}
         self._index = []
+        self._help_text = ''
         for name in kwargs:
                 self._add_single(name,kwargs[name])
 
-    ##  Allows pibrella.collection to return a list of members
+    # Return a tidy list of  all "public" methods
+    def __call__(self):
+        return filter(lambda x: x[0] != '_', dir(self))
+
+    ##  Allows pins collection to return a list of members
     def __repr__(self):
         return str(', '.join( self._all.keys() ))
 
@@ -152,6 +163,16 @@ class Pins:
 
     def __len__(self):
         return len(self._index)
+
+    # Return collection contents when called directly
+    def __call__(self):
+        return self._all.keys()
+
+    # Returns all items in pins collection
+    # plus an example of methods which can be called on those items
+    # TODO - ensure methods presented can be called against ALL members in collection
+    def __dir__(self):
+        return self._all.keys() + dir(self._all[self._all.keys()[0]])
 
     ## Returns a pin, if its found by name,
     #  otherwise tries to run the named function against all pins
@@ -207,6 +228,19 @@ class Pins:
         self._all[name] = obj
         self._index.append(name)
 
+    def each(self, handler):
+        '''Iterate through each item in the collection
+        and pass them to "handler" function in turn as
+        the sole argument.'''
+        for name in self._all.keys():
+            handler(self._all[name])
+
+    def _set_help_text(self,text):
+        self._help_text = text
+
+    def help(self):
+        return self._help_text
+
 ## ExplorerHAT class representing a GPIO Pin
 #
 #  Pin contains methods that apply
@@ -220,6 +254,10 @@ class Pin(object):
         self.handle_change = False
         self.handle_high = False
         self.handle_low = False
+
+    # Return a tidy list of  all "public" methods
+    def __call__(self):
+        return filter(lambda x: x[0] != '_', dir(self))
 
     def has_changed(self):
         if self.read() != self.last:
@@ -742,3 +780,105 @@ try:
 except RuntimeError:
     print("YOu must be root to use Explorer HAT!")
     ready = False
+
+
+_help = {
+    'index': '''Call with "explorerhat.help(topic)" for help with:
+
+    * touch
+    * input
+    * output
+    * light
+    * analog
+    * motor
+
+Explorer HAT uses simple named collections of things to get you
+started writing Python to control and sense the world around you.
+
+In the same way as you called help, try calling the name of a
+collection of things.
+
+    explorerhat.touch
+    ...
+    explorerhat.light
+
+You can then call methods on either entire collections, like so:
+
+    explorerhat.light.on()
+
+Or just one thing, like so:
+
+    explorerhat.light.red.on()
+''',
+    'touch':  '''Touch Inputs
+
+Explorer HAT includes 8 touch inputs which act just like buttons.
+
+The 8 touch pads are named "one" to "eight" and can be called like so:
+
+    explorerhat.touch.one
+    explorerhat.touch.two
+    ...
+    explorerhat.touch.eight
+''',
+    'input':  '''Inputs
+
+Explorer HAT includes 4 buffered, 5v tolerant inputs.
+
+The 4 inputs are named "one" to "four" and can be called like so:
+
+    explorerhat.input.one
+    ...
+    explorerhat.input.four
+''',
+    'output': '''Outputs
+
+Explorer HAT includes 4 5v tolerant outputs.
+
+Beware, these are driven through a Darlington Array ( ULN2003A )
+and will *pull down to ground* rather than supply 5v.
+
+The 4 outputs are named "one" to "four" and can be called like so:
+
+    explorerhat.output.one
+    ...
+    explorerhat.output.four
+''',
+    'light':  '''Lights
+
+Explorer HAT includs 4 LEDs; Yellow, Blue, Red and Green
+
+You can call them like so:
+    
+    explorerhat.light.yellow
+    ...
+    explorerhat.light.green
+
+''',
+    'analog': '''Analog Inputs
+
+Explorer HAT inclues 4, 5v tolerant analogue inputs.
+
+The 4 analog inputs are named "one" to "four" and can be called like so:
+
+    explorerhat.analog.one
+    ...
+    explorerhat.analog.four
+''',
+    'motor':  '''Motor Driver
+
+Explorer HAT includes a motor driver, capable of driving two motors.
+
+The two motors are named "one" and "two" and can be called like so:
+
+    explorerhat.motor.one
+    explorerhat.motor.two
+''',
+}
+
+def help(topic = 'index'):
+    if topic.lower() in _help.keys():
+        print("HELP{}\n\n{}\n{}".format('-'*66,_help[topic.lower()],'-'*70))
+    else:
+        print(_help['index'])
+    return None
