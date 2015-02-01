@@ -7,6 +7,8 @@ import time, sys
 DEFAULT_PAUSE = 0.5
 DEFAULT_DELAY = 0.02
 
+name = ''
+
 try:
     from msvcrt import getch
 except ImportError:
@@ -41,13 +43,10 @@ def keypress():
     return getch()
 
 def importme():
-	pass
-
-def _importme():
     try:
         import explorerhat
     except ImportError:
-    	output(horse)
+        output(horse)
         typewrite("\nWoah! Hold your horses, you've not installed the library!")
         time.sleep(0.2)
         typewrite("\nI'm going to send you back to the command line where you should type:")
@@ -58,7 +57,6 @@ def _importme():
         waitforspace()
         exit()
 
-
 def output(string):
     for char in string:
         sys.stdout.write(char)
@@ -67,6 +65,13 @@ def output(string):
 def waitforinput(string):
     output("\n>>> ")
     waitfor(string, True)
+
+def getinput():
+    try:
+        string = raw_input()
+    except NameError:
+        string = input()
+    return string
 
 def waitfor(string, echo = True, pause = DEFAULT_PAUSE):
     for char in string:
@@ -87,8 +92,15 @@ def typewrite(string, delay = DEFAULT_DELAY):
         output(char)
         time.sleep(delay)
 
+def getname():
+    global name
+    typewrite("Hi! Who are you?\n")
+    name = getinput()
+    output("\n")
+
 welcome = [
-    'Welcome to Explorer HAT...',
+    lambda:getname(),
+    'Welcome to Explorer HAT {name}...',
     '',
     '''In this introduction, we'll show you the absolute basics
 you will need to get Explorer HAT up and running.
@@ -185,5 +197,5 @@ for msg in welcome:
     if callable(msg):
         msg()
     else:
-        typewrite(msg)
+        typewrite(msg.replace('{name}',name))
         time.sleep(0.2)
