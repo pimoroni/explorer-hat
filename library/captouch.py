@@ -217,6 +217,8 @@ class Cap1xxx():
         self._write_byte(R_MTOUCH_CONFIG, 0b00000000)
         self.set_hold_delay(210)
         self.set_repeat_rate(210)
+
+        atexit.register(self.stop_watching)
         
 
     def get_input_status(self):
