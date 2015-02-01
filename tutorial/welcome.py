@@ -3,6 +3,7 @@
 '''Explorer HAT Introduction'''
 
 import time, sys
+explorerhat = None
 
 DEFAULT_PAUSE = 0.5
 DEFAULT_DELAY = 0.02
@@ -43,6 +44,7 @@ def keypress():
     return getch()
 
 def importme():
+    global explorerhat
     try:
         import explorerhat
     except ImportError:
@@ -64,7 +66,13 @@ def output(string):
 
 def waitforinput(string):
     output("\n>>> ")
-    waitfor(string, True)
+    #waitfor(string, True)
+    while True:
+        if string == getinput():
+            return True
+        else:
+            typewrite("Whoops! That isn't quite right. Try again!")
+            typewrite(">>> ")
 
 def getinput():
     try:
