@@ -12,7 +12,6 @@ name = ''
 
 def exit_handler():
     print(colorama.Fore.RESET + colorama.Back.RESET)
-    print("\nExiting!")
 
 atexit.register(exit_handler)
 
@@ -53,6 +52,8 @@ def importme():
     global explorerhat
     try:
         import explorerhat
+        for led in explorerhat.light
+            pass
     except ImportError:
         output(horse)
         typewrite("\nWoah! Hold your horses, you've not installed the library!")
@@ -116,71 +117,69 @@ def getname():
     name = getinput()
 
 welcome = [
-    lambda:getname(),
-    'Welcome to Explorer HAT {name}...',
-    '',
-    '''In this introduction, we'll show you the absolute basics
-you will need to get Explorer HAT up and running.
+lambda:getname(),
+'Welcome to Explorer HAT {name}...',
+'''In this introduction, we'll show you the basics.
 
-We'll teach you how to turn on and off a light, and
-how to get help when you need it.
-
-Are you ready?''',
-    lambda:waitforspace(),
-    '''Okay! Great...
+You'll learn how to turn a light on and off,
+and how to use a fancy pulse effect too!
 ''',
-    '''Before starting, we must import the Explorer HAT library.
+lambda:waitforspace(),
+'''Before starting, we must "import" Explorer HAT.
+
+This loads the Python code, called a module, needed
+to make Explorer HAT work.
 
 To do this, type:
 
     import explorerhat
 
-This works when you use "python" on the command line,
-or if you're running IDLE.
-
 Try it now:''',
-    lambda:waitforinput('import explorerhat'),
-    lambda:importme(),
-    '''Great! Now we can continue...
-''',
-    '''But first, we need to learn a little about how Explorer HAT works.
+lambda:waitforinput('import explorerhat'),
+lambda:importme(),
+'''You can do this when you run "python" on the command 
+line, and also in IDLE.
 
-* It has 4 inputs, which wont break if you feed them 5 volts.
-* It has 4 outputs, which will sink either 3.3 or 5 volts to ground.
-* It has 4 LEDs; Yellow, Red, Blue and Green
-* And it has a whopping 8 capacitive touch inputs, 4 of which are fruit compatible.
+Now, let's learn a little about Explorer HAT. It has:
 
-If you're lucky enough to have an Explorer HAT Pro, you'll also find:
+* 4 inputs, which accept up to 5 volts
+* 4 outputs, which sink up to 5 volts to ground
+* 4 LEDs; Yellow, Red, Blue and Green
+* 8 touch inputs, 4 are fruit compatible
+
+If you have an Explorer HAT Pro, you'll also find:
 
 * 2 Motor outputs, for making robots!
-* 4 Analog Inputs for reading sensors, sliders and potentiometers
+* 4 Analog Inputs for reading sensors, sliders and stuff
 ''',
-    '''Let's start with something simple. We'll turn on an LED.
+'''Let's start with something simple. We'll turn on an LED.
 
 Type:
 
     explorerhat.light.red.on()
 ''',
-    lambda:waitforinput('explorerhat.light.red.on()'),
-    lambda:explorerhat.light.red.on(),
-    '''Neat, huh? But what if we want to turn on ALL THE LEDS!!!
+lambda:waitforinput('explorerhat.light.red.on()'),
+lambda:explorerhat.light.red.on(),
+'''Neat, huh? But what if we want to turn on ALL THE LEDS!!!
 
 Try:
 
     explorerhat.light.on()
 ''',
-    lambda:waitforinput('explorerhat.light.on()'),
-    lambda:explorerhat.light.on(),
+lambda:waitforinput('explorerhat.light.on()'),
+lambda:explorerhat.light.on(),
 '''Easy!
 
-Well, I've got news for you {name}. Explorer HAT really doesn't get much harder
-than this. Everything is in a collection, like "led", "input" or "output".
+Well, {name}. You'll be happy to know Explorer HAT
+really doesn't get much harder than this.
 
-You refer to everything in a collection by just using the collection name, IE:
+Everything is in a collection, like "led" or "input".
+
+You refer to things by using the collection name, IE:
 
     explorerhat.light
 
-Or one item in a collection by referring to it specifically, IE:
+Or an item in a collection by referring to it by name, IE:
 
     explorerhat.light.red
 
@@ -190,24 +189,28 @@ Type:
 
     explorerhat.light.off()
 ''',
-    lambda:waitforinput('explorerhat.light.off()'),
-    lambda:explorerhat.light.off(),
+lambda:waitforinput('explorerhat.light.off()'),
+lambda:explorerhat.light.off(),
 '''Boom! Now let's make 'em pulse! Aww yeah!
 
 Type:
 
     explorerhat.light.pulse()
 ''',
-    lambda:waitforinput('explorerhat.light.pulse()'),
-    lambda:explorerhat.light.pulse(),
+lambda:waitforinput('explorerhat.light.pulse()'),
+lambda:explorerhat.light.pulse(),
 '''Excellent! Well done {name}, you've mastered the basics.
 
-There's nothing more to learn here, we'll drop you to the
-command line and you can run the next tutorial with:
+One last thing...
 
-sudo ./outputs.py
-''',
-    lambda:waitforspace(),
+Any time you need a helping hand, just type:
+
+    explorerhat.help()
+
+Now, run the next tutorial with:
+
+    sudo ./outputs.py
+'''
 ]
 
 for msg in welcome:

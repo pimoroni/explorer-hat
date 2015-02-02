@@ -150,6 +150,10 @@ class Pins:
         for name in kwargs:
                 self._add_single(name,kwargs[name])
 
+    def __iter__(self):
+        for pin in self._index:
+            yield self._all[pin]
+
     # Return a tidy list of  all "public" methods
     def __call__(self):
         return filter(lambda x: x[0] != '_', dir(self))
