@@ -461,6 +461,12 @@ class AnalogInput(object):
     def read(self):
         return _analog.read_se_adc(self.channel)
 
+class CapTouchSettings(object):
+    type = 'Cap Touch Settings'
+
+    def enable_multitouch(self, en=True):
+        _cap1208.enable_multitouch(en)
+
 class CapTouchInput(object):
     type = 'Cap Touch Input'
     
@@ -471,7 +477,7 @@ class CapTouchInput(object):
         self.channel = channel
         self.handlers = {'press':None, 'release':None, 'held':None}
         for event in ['press','release','held']:
-            cap.on(channel = self.channel, event=event, handler=self._handle_state)
+            _cap1208.on(channel = self.channel, event=event, handler=self._handle_state)
 
     def _handle_state(self, channel,event):
         if channel == self.channel:
@@ -574,8 +580,8 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 
-cap = captouch.Cap1208()
-if not cap._get_product_id() == CAP_PRODUCT_ID:
+_cap1208 = captouch.Cap1208()
+if not _cap1208._get_product_id() == CAP_PRODUCT_ID:
     exit("Explorer HAT not found...\nHave you enabled i2c?")
     
 import analog as _analog
@@ -590,6 +596,9 @@ else:
 atexit.register(explorerhat_exit)
 
 try:
+    settings = ObjectCollection()
+    settings._add(touch = CapTouchSettings())
+ 
     light = ObjectCollection()
     light._add(yellow = Light(LED1))
     light._add(blue   = Light(LED2))

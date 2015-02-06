@@ -185,6 +185,7 @@ class Cap1xxx():
         self.async_poll = None
         self.i2c_addr = i2c_addr
         self.i2c = SMBus(i2c_bus)
+        self.count = 0
 
         self.handlers = {
             'press' :[None]*8,
@@ -213,13 +214,10 @@ class Cap1xxx():
         self.enable_repeat(0b00000000)
         self.enable_multitouch(True)
 
-        # Temporary fudge to force multi-touch support
-        self._write_byte(R_MTOUCH_CONFIG, 0b00000000)
         self.set_hold_delay(210)
         self.set_repeat_rate(210)
 
         atexit.register(self.stop_watching)
-        
 
     def get_input_status(self):
         """Get the status of all inputs.
@@ -323,11 +321,18 @@ class Cap1xxx():
     def _poll(self):
         """Single polling pass, should be called in
         a loop, preferably threaded."""
+        self.count += 1        
         if self.wait_for_interrupt():
             inputs = self.get_input_status()
             for x in range(8):
                 self._trigger_handler(x, inputs[x])
             self.clear_interrupt()
+        
+            if self.count > 10:    
+                # Force recalibration on fruit pads
+                self._write_byte(0x26, 0b00001111)
+                self.count = 0
+        
 
     def _trigger_handler(self, channel, event):
         if event == 'none':
@@ -343,9 +348,9 @@ class Cap1xxx():
         block bit in the config register"""
         ret_mt = self._read_byte(R_MTOUCH_CONFIG)
         if en:
-            self._write_byte(R_MTOUCH_CONFIG, ret_mt & ~1)
+            self._write_byte(R_MTOUCH_CONFIG, ret_mt & ~0x80)
         else:
-            self._write_byte(R_MTOUCH_CONFIG, ret_mt | 1 )
+            self._write_byte(R_MTOUCH_CONFIG, ret_mt | 0x80 )
 
     def enable_repeat(self, inputs):
         self.repeat_enabled = inputs
