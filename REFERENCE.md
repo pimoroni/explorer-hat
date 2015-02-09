@@ -19,12 +19,34 @@ explorerhat.touch.eight
 
 Each input has a number of functions for both reading its state and binding events to certain conditions:
 
-* is_pressed() - Returns True if the input is being touched.
-* is_held() - Returns True if the input has been held down for some time
-* pressed( handler_function ) - Calls "handler_function" whenever the input is touched
-* released( handler_funtion ) - Calls "handler_function" whenever the input is released
-* held( handler_function ) - Calls "handler_function" repeatedly while the input is held down ( default once every 540ms )
-* 
+Returns True if the input is being touched.
+
+```python
+explorerhat.input.is_pressed()
+```
+
+Returns True if the input has been held down for some time
+
+```python
+explorerhat.input.is_held()
+```
+
+Calls "handler_function" whenever the input is touched
+
+```python
+explorerhat.input.pressed( handler_function )
+```
+Calls "handler_function" whenever the input is released
+
+```python
+explorerhat.input.released( handler_funtion )
+```
+
+Calls "handler_function" repeatedly while the input is held down ( default once every 540ms )
+
+```python
+explorerhat.input.held( handler_function )
+```
 
 **Unimplemented/TODO**
 
