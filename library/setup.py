@@ -44,5 +44,5 @@ setup(name		= 'ExplorerHAT',
 	url		= 'http://shop.pimoroni.com',
 	classifiers     = classifiers,
 	py_modules	= ['explorerhat','pins','captouch','analog'],
-	install_requires= ['rpi.gpio >= 0.5.5']
+	install_requires= ['rpi.gpio >= 0.5.10']
 )

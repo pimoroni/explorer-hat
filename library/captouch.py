@@ -277,6 +277,7 @@ class Cap1xxx():
                 return True
             if self._millis() > start + timeout:
                 return False
+            time.sleep(0.05)
 
     def on(self, channel=0, event='press', handler=None):
         self.handlers[event][channel] = handler
@@ -332,7 +333,6 @@ class Cap1xxx():
                 # Force recalibration on fruit pads
                 self._write_byte(0x26, 0b00001111)
                 self.count = 0
-        
 
     def _trigger_handler(self, channel, event):
         if event == 'none':
