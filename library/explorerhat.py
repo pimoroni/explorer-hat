@@ -637,10 +637,10 @@ try:
     if is_explorer_pro():
         motor._add(one = Motor(M1F, M1B))
         motor._add(two = Motor(M2F, M2B))
-        analog._add(one   = AnalogInput(0))
-        analog._add(two   = AnalogInput(1))
-        analog._add(three = AnalogInput(2))
-        analog._add(four  = AnalogInput(3))
+        analog._add(one   = AnalogInput(3))
+        analog._add(two   = AnalogInput(2))
+        analog._add(three = AnalogInput(1))
+        analog._add(four  = AnalogInput(0))
 except RuntimeError:
     print("YOu must be root to use Explorer HAT!")
     ready = False
