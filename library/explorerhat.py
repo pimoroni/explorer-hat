@@ -146,38 +146,78 @@ class Motor(object):
     type = 'Motor'
     
     def __init__(self, pin_fw, pin_bw):
+        self.pwm = None
+        self.pwm_pin = None
         self._invert = False
         self.pin_fw = pin_fw
         self.pin_bw = pin_bw
+        self._speed = 0
         GPIO.setup(self.pin_fw, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.pin_bw, GPIO.OUT, initial=GPIO.LOW)
 
     def invert(self):
         self._invert = not self._invert
+        self._speed = -self._speed
+        self.speed(self._speed)
+        return self._invert
 
-    def forwards(self):
+    def forwards(self, speed=100):
+        if speed > 100 or speed < 0:
+            raise ValueError("Speed must be between 0 and 100")
+            return False
         if self._invert:
-            self._backwards()
+            self.speed(-speed)
         else:
-            self._forwards()
+            self.speed(speed)
 
-    def backwards(self):
+    def backwards(self, speed=100):
+        if speed > 100 or speed < 0:
+            raise ValueError("Speed must be between 0 and 100")
+            return False 
         if self._invert:
-            self._forwards()
+            self.speed(-speed)
         else:
-            self._backwards()
+            self.speed(speed)
 
-    def _forwards(self):
-        GPIO.output(self.pin_fw, GPIO.LOW)
-        GPIO.output(self.pin_bw, GPIO.HIGH)
+    def _duty_cycle(self, duty_cycle):
+        if self.pwm != None:
+            self.pwm.ChangeDutyCycle(duty_cycle)
 
-    def _backwards(self):
-        GPIO.output(self.pin_fw, GPIO.HIGH)
-        GPIO.output(self.pin_bw, GPIO.LOW)
+    def _setup_pwm(self, pin, duty_cycle):
+        if self.pwm_pin != pin:
+            if self.pwm != None:
+                self.pwm.stop()
+                time.sleep(0.005)
+            self.pwm = GPIO.PWM(pin, 100)
+            self.pwm.start(duty_cycle)
+            self.pwm_pin = pin
+
+    def speed(self, speed=100):
+        if speed > 100 or speed < -100:
+            raise ValueError("Speed must be between -100 and 100")
+            return False
+        self._speed = speed
+        if speed > 0:
+            GPIO.output(self.pin_bw, GPIO.LOW)
+            self._setup_pwm(self.pin_fw, speed)
+            self._duty_cycle(speed)
+        if speed < 0:
+            GPIO.output(self.pin_fw, GPIO.LOW)
+            self._setup_pwm(self.pin_bw, abs(speed))
+            self._duty_cycle(abs(speed))
+        if speed == 0:
+            if self.pwm != None:
+              self.pwm.stop()
+              time.sleep(0.005)
+            self.pwm_pin = None
+            self.pwm = None
+        return speed
 
     def stop(self):
-        GPIO.output(self.pin_fw, GPIO.LOW)
-        GPIO.output(self.pin_bw, GPIO.LOW)
+        self.speed(0)
+
+    forward = forwards
+    backward = backwards
 
 ## ExplorerHAT class representing a GPIO Input
 #
