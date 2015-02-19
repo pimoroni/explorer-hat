@@ -64,6 +64,12 @@ def ohai(channel, event):
 explorerhat.touch.one.pressed(ohai)
 ```
 
+## Notes
+
+Explorer HAT uses an output driver chip called the ULN2003A, which contains a set of transistor pairs called a Darlington Array. It transforms the small logic signal of the Pi into something capable of driving much bigger loads, such as motors, steppers, lights and more. 
+
+The 4 outputs on Explorer HAT can sink 5V, but not source. This means you need to connect your load to one of the 5V pins, and then to the output. When you turn the output on it will connect your circuit to ground, allowing current to flow and your load to turn on. This is the opposite of using a bare Pi GPIO pin, where you might connect to the pin and then to ground; keep this in mind!
+
 
 # Documentation
 
