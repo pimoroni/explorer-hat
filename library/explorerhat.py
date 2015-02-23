@@ -640,8 +640,8 @@ try:
     settings._add(touch = CapTouchSettings())
  
     light = ObjectCollection()
-    light._add(yellow = Light(LED1))
-    light._add(blue   = Light(LED2))
+    light._add(blue   = Light(LED1))
+    light._add(yellow = Light(LED2))
     light._add(red    = Light(LED3))
     light._add(green  = Light(LED4))
     light._alias(amber = 'yellow')
