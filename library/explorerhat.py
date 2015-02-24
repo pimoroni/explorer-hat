@@ -175,9 +175,9 @@ class Motor(object):
             raise ValueError("Speed must be between 0 and 100")
             return False 
         if self._invert:
-            self.speed(-speed)
-        else:
             self.speed(speed)
+        else:
+            self.speed(-speed)
 
     def _duty_cycle(self, duty_cycle):
         if self.pwm != None:
@@ -218,6 +218,7 @@ class Motor(object):
 
     forward = forwards
     backward = backwards
+    reverse = invert
 
 ## ExplorerHAT class representing a GPIO Input
 #
