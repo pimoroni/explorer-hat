@@ -100,10 +100,7 @@ Each light includes all of the functionality of an output. See above.
 
 ### Motor ( Pro Only )
 
-* reverse() - Reverses the direction of forwards for this motor
-* forwards() - Turns the motor "forwards"
-* backwards() - Turns the motor "backwards"
-
-**Unimplemented / TODO**
-
-* speed( value ) - Turns the motor at speed, range from -100 to +100 ( full reverse to full forwards )
+* invert() - Reverses the direction of forwards for this motor
+* forwards( speed ) - Turns the motor "forwards" at speed ( default 100% )
+* backwards( speed ) - Turns the motor "backwards" at speed ( default 100% )
+* speed(-100 to 100) - Moves the motor at speed, from full backwards to full forwards
