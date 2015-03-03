@@ -14,6 +14,19 @@ They also require the SMBus Python module, which you'll need to install like so:
 
 ```bash
 sudo apt-get install python-smbus
+
+And you'll need "pip" if you don't already have it:
+
+```bash
+sudo apt-get install python-pip
+```
+
+## Installing the Library
+
+You should now be able to install Explorer HAT with Pip:
+
+```bash
+sudo pip install explorerhat
 ```
 
 ## Getting Started
