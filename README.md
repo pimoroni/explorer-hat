@@ -14,6 +14,7 @@ They also require the SMBus Python module, which you'll need to install like so:
 
 ```bash
 sudo apt-get install python-smbus
+```
 
 And you'll need "pip" if you don't already have it:
 
