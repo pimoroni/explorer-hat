@@ -207,9 +207,6 @@ Any time you need a helping hand, just type:
 
     explorerhat.help()
 
-Now, run the next tutorial with:
-
-    sudo ./outputs.py
 '''
 ]
 
