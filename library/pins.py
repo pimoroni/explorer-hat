@@ -128,6 +128,7 @@ class ObjectCollection:
     def _add_single(self,name,obj):
         # Handle adding additional items after init
         self._all[name] = obj
+        self._all[name].name = name
         self._index.append(name)
 
     def each(self, handler):

@@ -13,4 +13,9 @@ def toggle_light(channel, event):
 explorerhat.touch.pressed(toggle_light)
 explorerhat.touch.released(toggle_light)
 
+def handle_input(pin):
+    print(pin.name)
+
+explorerhat.input.changed(handle_input)
+
 explorerhat.pause()
