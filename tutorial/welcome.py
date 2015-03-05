@@ -52,7 +52,7 @@ def importme():
     global explorerhat
     try:
         import explorerhat
-        for led in explorerhat.light
+        for led in explorerhat.light:
             pass
     except ImportError:
         output(horse)
