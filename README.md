@@ -1,4 +1,4 @@
-# Explorer HAT
+![Explorer HAT](explorer-hat.png)
 
 This library is based on the Pibrella framework, you might find much of it familiar. It's got added motors, capacitive touch and analog input though!
 
