@@ -54,3 +54,20 @@ Function | Motor | GPIO pin
     -    |   2   | GPIO 26
     +    |   1   | GPIO 19
     -    |   1   | GPIO 20
+
+### 3.3v breakout ( Explorer HAT Pro only )
+
+Function | GPIO pin
+---------|----------
+SDA      | GPIO 2
+SCL      | GPIO 3
+---------|----------
+PWM      | GPIO 18
+---------|----------
+MOSI     | GPIO 10
+MISO     | GPIO 9
+SCK      | GPIO 11
+CS       | GPIO 8
+---------|----------
+TX       | GPIO 14
+RX       | GPIO 15
