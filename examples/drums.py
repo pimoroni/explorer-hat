@@ -5,25 +5,14 @@ import signal, pygame, explorerhat
 LEDS = [4,17,27,5]
 
 samples = [
-'sounds/kurz/CYCdh_Kurz01-ClHat.wav',
-'sounds/kurz/CYCdh_Kurz01-PdHat.wav',
-'sounds/kurz/CYCdh_Kurz01-Crash01.wav',
-'sounds/kurz/CYCdh_Kurz01-OpHat01.wav',
-'sounds/kurz/CYCdh_Kurz01-Kick01.wav',
-'sounds/kurz/CYCdh_Kurz01-Snr01.wav',
-'sounds/kurz/CYCdh_Kurz01-HfHat.wav',
-'sounds/kurz/CYCdh_Kurz01-Ride01.wav'
-]
-
-samples = [
-'sounds/electro/CYCdh_ElecK05-Kick01.wav',
-'sounds/electro/CYCdh_ElecK05-Snr01.wav',
-'sounds/electro/CYCdh_ElecK05-Snr04.wav',
-'sounds/electro/CYCdh_ElecK05-OpHat01.wav',
-'sounds/electro/CYCdh_ElecK05-Clap01.wav',
-'sounds/electro/CYCdh_ElecK05-Clap02.wav',
-'sounds/electro/CYCdh_ElecK06-Clap03.wav',
-'sounds/electro/CYCdh_ElecK05-ClHat01.wav'
+'sounds/hit.wav',
+'sounds/thud.wav',
+'sounds/clap.wav',
+'sounds/crash.wav',
+'sounds/hat.wav',
+'sounds/smash.wav',
+'sounds/rim.wav',
+'sounds/ting.wav'
 ]
 
 pygame.mixer.pre_init(44100, -16, 1, 512)
