@@ -646,6 +646,12 @@ GPIO.setwarnings(False)
 _cap1208 = captouch.Cap1208()
 if not _cap1208._get_product_id() == CAP_PRODUCT_ID:
     exit("Explorer HAT not found...\nHave you enabled i2c?")
+
+_cap1208._write_byte(captouch.R_SAMPLING_CONFIG, 0b00001000)
+_cap1208._write_byte(captouch.R_SENSITIVITY,     0b01100000)
+_cap1208._write_byte(captouch.R_GENERAL_CONFIG,  0b00111000)
+_cap1208._write_byte(captouch.R_CONFIGURATION2,  0b01100000)
+_cap1208.set_touch_delta(10)
     
 import analog as _analog
 if _analog.adc_available:

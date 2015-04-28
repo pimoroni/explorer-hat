@@ -186,6 +186,7 @@ class Cap1xxx():
         self.i2c_addr = i2c_addr
         self.i2c = SMBus(i2c_bus)
         self.count = 0
+        self._delta = 50
 
         self.handlers = {
             'press' :[None]*8,
@@ -225,15 +226,18 @@ class Cap1xxx():
         whether an input has been triggered since the
         interrupt flag was last cleared."""
         touched = self._read_byte(R_INPUT_STATUS)
+        threshold = self._read_block(R_INPUT_1_THRESH, 8)
+        delta = self._read_block(R_INPUT_1_DELTA, 8)
         #status = ['none'] * 8
         for x in range(8):
             if (1 << x) & touched:
                 status = 'none'
-                delta = self._get_twos_comp(self._read_byte(R_INPUT_1_DELTA + x))
-                #print(delta)
+                _delta = self._get_twos_comp(delta[x]) 
+                #threshold = self._read_byte(R_INPUT_1_THRESH + x)
+                #print('Got event with delta: {}, thresh: {}'.format(_delta, threshold[x]))
                 # We only ever want to detect PRESS events
                 # If repeat is disabled, and release detect is enabled
-                if delta > 50:
+                if _delta >= threshold[x]: # self._delta:
                     #  Touch down event
                     if self.input_status[x] in ['press','held']:
                         if self.repeat_enabled & (1 << x):
@@ -249,6 +253,7 @@ class Cap1xxx():
                         status = 'release'
                     else:
                         status = 'none'
+
                 self.input_status[x] = status
                 self.input_pressed[x] = status in ['press','held','none']
             else:
@@ -264,7 +269,9 @@ class Cap1xxx():
     def clear_interrupt(self):
         """Clear the interrupt flag, bit 0, of the
         main control register"""
-        self._write_byte(R_MAIN_CONTROL, 0b00000000)
+        main = self._read_byte(R_MAIN_CONTROL)
+        main &= ~0b00000001
+        self._write_byte(R_MAIN_CONTROL, main)
 
     def wait_for_interrupt(self, timeout=100):
         """Wait for, interrupt, bit 0 of the main
@@ -277,7 +284,7 @@ class Cap1xxx():
                 return True
             if self._millis() > start + timeout:
                 return False
-            time.sleep(0.05)
+            time.sleep(0.000001)
 
     def on(self, channel=0, event='press', handler=None):
         self.handlers[event][channel] = handler
@@ -297,6 +304,9 @@ class Cap1xxx():
             self.async_poll = None
             return True
         return False
+
+    def set_touch_delta(self, delta):
+        self._delta = delta
 
     def set_hold_delay(self, ms):
         """Set time before a press and hold is detected,
@@ -329,10 +339,10 @@ class Cap1xxx():
                 self._trigger_handler(x, inputs[x])
             self.clear_interrupt()
         
-            if self.count > 10:    
+            #if self.count > 10:    
                 # Force recalibration on fruit pads
-                self._write_byte(0x26, 0b00001111)
-                self.count = 0
+            #    self._write_byte(0x26, 0b00001111)
+            #    self.count = 0
 
     def _trigger_handler(self, channel, event):
         if event == 'none':
@@ -368,6 +378,9 @@ class Cap1xxx():
     def _read_byte(self, register):
         return self.i2c.read_byte_data(self.i2c_addr, register)
 
+    def _read_block(self, register, length):
+        return self.i2c.read_i2c_block_data(self.i2c_addr, register, length)
+
     def _millis(self):
         return int(round(time.time() * 1000))
 
@@ -380,23 +393,3 @@ class Cap1208(Cap1xxx):
 
 class Cap1188(Cap1xxx):
     supported = [PID_CAP1188]
-
-'''
-bus.write_byte_data(ADDR, INPUT_CONFIG_REG,  0b10100000)
-bus.write_byte_data(ADDR, INPUT_CONFIG_REG2, 0b00000000)
-bus.write_byte_data(ADDR, MULTI_TOUCH_REG,   0b00000000)
-
-while True:
-    int = bus.read_byte_data(ADDR,0)
-    if int & 1:
-        touched = bus.read_byte_data(ADDR,3)
-        bus.write_byte_data(ADDR,0,0)
-        for id, button in buttons.iteritems():
-            if touched & id:
-                print(button)
-                if button in leds.keys():
-                    GPIO.output(leds[button], GPIO.HIGH)
-            else:
-                if button in leds.keys():
-                    GPIO.output(leds[button], GPIO.LOW)
-'''
