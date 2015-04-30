@@ -2,6 +2,8 @@
 
 ### ADC, via ADS1015, i2c addr 0x48 ( Explorer HAT Pro only )
 
+The Explorer HAT Pro ADC uses i2c, so it doesn't have input pins associated with it.
+
 ### Cap Touch, via CAP1208, i2c addr 0x28
 
 Read from register 3 to retrieve button states. These will latch until register 0 is cleared.
@@ -21,6 +23,8 @@ Button | Register Value
 
 ### LEDs
 
+Both models of Explorer HAT have 4 LEDs, these are turned on with a logic HIGH and off with a LOW.
+
 LED   | GPIO pin
 ------|--------
 LED 1 | GPIO 4
@@ -29,6 +33,8 @@ LED 3 | GPIO 27
 LED 4 | GPIO 5
 
 ### Outputs, via ULN2003A
+
+Both models of Explorer HAT have a ULN2003A output driver. When you turn one of these outputs on ( logic HIGH ) it will sink current to ground. Be mindful of this when connecting to the output driver- you'll need to connect your device to a voltage supply, and then to the output pin.
 
 Output   | GPIO pin
 ---------|----------
@@ -39,6 +45,8 @@ Output 4 | GPIO 16
 
 ### Inputs, via 5V tolerant input buffer
 
+Both models of Explorer HAT have four protected inputs. These are just like normal input pins on your Pi, except they can tolerate 5V.
+
 Input    | GPIO pin
 ---------|-----------
 Input 1  | GPIO 23
@@ -48,6 +56,8 @@ Input 4  | GPIO 25
 
 ### Motor, via DRV8833PWP ( Explorer HAT Pro only )
 
+Explorer HAT Pro has a motor driver onboard. It can drive motors in both directions depending on which pin you switch high and which you switch low. It uses two pairs of pins- 21,26 and 19,20 for each motor channel.
+
 Function | Motor | GPIO pin
 ---------|-------|-----------
     +    |   2   | GPIO 21
@@ -56,6 +66,8 @@ Function | Motor | GPIO pin
     -    |   1   | GPIO 20
 
 ### 3.3v breakout ( Explorer HAT Pro only )
+
+Explorer HAT Pro breaks out a number of your Raspberry Pi IO pisn to give you convinient access to SPI, PWM, SPI and Serial/UART. None of these pins are 5V tolerant, so be careful what you connect!
 
 Function | GPIO pin
 ---------|----------
