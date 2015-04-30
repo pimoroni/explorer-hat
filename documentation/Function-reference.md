@@ -84,14 +84,8 @@ Each light includes all of the functionality of an output. See above.
 
 ### Analog ( Pro Only )
 
-* read() - Returns the value of the analog input in millivolts.
-
-**Unimplemented / TODO**
-
-* `on_change( handler_function, threshold )` - Calls "handler_function" when a change >= threshold millivolts occurs
-* `on_rise( handler_function, threshold )` - Same as above, but for positive changes only
-* `on_fall( handler_function, threshold )` - Same as above, but for negative changes only
-* `on_value( handler_function, value_a[, value_b] )` - Calls "handler_function" when input = value_a or optionally falls between a and b
+* `read()` - Returns the value of the analog input in millivolts.
+* `change( handler_function, sensitivity )` - Calls "handler_function" when a change greater than the threshold millivolts occurs
 
 ### Motor ( Pro Only )
 
