@@ -1,4 +1,16 @@
-# Function Reference
+<!--
+---
+title: Explorer HAT Python Function Reference
+handle: explorer-hat-python-function-reference
+type: tutorial
+summary: A comprehensive reference for Explorer HAT's Python library
+author: Phil Howard
+products: [explorer-hat, explorer-hat-pro]
+tags: [Explorer HAT, Raspberry Pi, Python, Programming]
+images: [images/tba.png]
+difficulty: Beginner
+-->
+# Explorer HAT Function Reference
 
 This reference details all of the available functions on Explorer HAT touch inputs, lights, inputs, outputs, analog inputs and motor driver.
 
@@ -6,7 +18,7 @@ The Analog inputs and Motor driver are only available on Explorer HAT Pro.
 
 ### Touch
 
-Explorer HAT includes 8 touch inputs which act just like buttons.
+Explorer HAT includes 8 touch inputs which act just like buttons. We've fine tuned these to be really responsive, and you can easily use them for entering PIN codes, controlling a project or playing the drums.
 
 The 8 inputs are named "one" to "eight" and can be referenced as such:
 
@@ -19,38 +31,47 @@ explorerhat.touch.eight
 
 Each input has a number of functions for both reading its state and binding events to certain conditions:
 
-Returns True if the input is being touched.
-
 ```python
 explorerhat.input.is_pressed()
 ```
 
-Returns True if the input has been held down for some time
+Returns True if the input is being touched.
 
 ```python
 explorerhat.input.is_held()
 ```
-
-Calls "handler_function" whenever the input is touched
+Returns True if the input has been held down for some time
 
 ```python
 explorerhat.input.pressed( handler_function )
 ```
-Calls "handler_function" whenever the input is released
+
+Calls "handler_function" whenever the input is touched.
+
+The handler function should accept two things, a channel ( the number of the button ) and an event ( whether it's pressed/released ) and look something like this:
+
+```python
+def handle(channel, event)
+    print("Got {} on {}".format(event, channel))
+```
+
+An event of `press` indicates the touch pad was pressed, and an event of `release` indicates it was released.
 
 ```python
 explorerhat.input.released( handler_funtion )
 ```
 
-Calls "handler_function" repeatedly while the input is held down ( default once every 540ms )
+Calls "handler_function" whenever the input is released. The handler function is the same as described above.
 
 ```python
 explorerhat.input.held( handler_function )
 ```
 
+Calls "handler_function" repeatedly while the input is held down ( default once every 540ms )
+
 ### Input
 
-Explorer HAT includes 4 buffered, 5v tolerant inputs
+Explorer HAT includes 4 buffered, 5v tolerant inputs. These act just like the GPIO pins on your Pi and don't require any special treatment. When you send a HIGH signal into them, you'll read a HIGH pin state ( 1 ) in Python.
 
 * `read()` - Read the state of the input
 * `has_changed()` - Returns true if the input has changed since the last read
@@ -58,6 +79,23 @@ Explorer HAT includes 4 buffered, 5v tolerant inputs
 * `on_low( handler_function[, bounce_time ] )` - Calls "handler_function" when the input goes low ( off )
 * `on_high( handler_function[, bounce_time ] )` - Calls "handler_function" when the input goes on ( high )
 * `clear_events()` - Remove all handlers
+
+Unlike analog events, you'll get an instance of the input passed to your handler function, so you can do something like this:
+
+```python
+def changed(input):
+  state = input.read()
+  name  = input.name
+  print("Input {} changed to {}".format(name,state))
+  
+explorerhat.input.one.changed(changed)
+```
+Then, when you change the input you'll see something like:
+
+```bash
+Input one changed to 1
+Input one changed to 0
+```
 
 ### Output
 
