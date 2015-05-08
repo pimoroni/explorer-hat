@@ -16,7 +16,7 @@ This reference details all of the available functions on Explorer HAT touch inpu
 
 The Analog inputs and Motor driver are only available on Explorer HAT Pro.
 
-### Touch
+### Touch - wrong class called?
 
 Explorer HAT includes 8 touch inputs which act just like buttons. We've fine tuned these to be really responsive, and you can easily use them for entering PIN codes, controlling a project or playing the drums.
 
