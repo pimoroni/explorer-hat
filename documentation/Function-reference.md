@@ -18,9 +18,9 @@ The Analog inputs and Motor driver are only available on Explorer HAT Pro.
 
 ### Touch
 
-Explorer HAT includes 8 touch inputs which act just like buttons. We've fine tuned these to be really responsive, and you can easily use them for entering PIN codes, controlling a project or playing the drums.
+Explorer HAT includes 8 touch pads which act just like buttons. We've fine tuned these to be really responsive, and you can easily use them for entering PIN codes, controlling a project or playing the drums.
 
-The 8 inputs are named "one" to "eight" and can be referenced as such:
+The 8 pads are named "one" to "eight" and can be referenced as such:
 
 ```python
 explorerhat.touch.one
@@ -29,26 +29,26 @@ explorerhat.touch.two
 explorerhat.touch.eight
 ```
 
-Each input has a number of functions for both reading its state and binding events to certain conditions:
+Each touch pad has a number of functions for both reading its state and binding events to certain conditions:
 
 ```python
-explorerhat.input.is_pressed()
+explorerhat.touch.is_pressed()
 ```
 
-Returns True if the input is being touched.
+Returns True if the pad is being touched.
 
 ```python
-explorerhat.input.is_held()
+explorerhat.touch.is_held()
 ```
-Returns True if the input has been held down for some time
+Returns True if the pad has been held down for some time
 
 ```python
-explorerhat.input.pressed( handler_function )
+explorerhat.touch.pressed( handler_function )
 ```
 
-Calls "handler_function" whenever the input is touched.
+Calls "handler_function" whenever the pad is touched.
 
-The handler function should accept two things, a channel ( the number of the button ) and an event ( whether it's pressed/released ) and look something like this:
+The handler function should accept two things, a channel ( the number of the pad ) and an event ( whether it's pressed/released ) and look something like this:
 
 ```python
 def handle(channel, event)
@@ -58,16 +58,16 @@ def handle(channel, event)
 An event of `press` indicates the touch pad was pressed, and an event of `release` indicates it was released.
 
 ```python
-explorerhat.input.released( handler_funtion )
+explorerhat.touch.released( handler_funtion )
 ```
 
-Calls "handler_function" whenever the input is released. The handler function is the same as described above.
+Calls "handler_function" whenever the pad is released. The handler function is the same as described above.
 
 ```python
-explorerhat.input.held( handler_function )
+explorerhat.touch.held( handler_function )
 ```
 
-Calls "handler_function" repeatedly while the input is held down ( default once every 540ms )
+Calls "handler_function" repeatedly while the pad is held down ( default once every 540ms )
 
 ### Input
 
