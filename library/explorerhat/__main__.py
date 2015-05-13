@@ -4,7 +4,12 @@
 
 API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
-import sys, time, threading, signal, atexit, captouch
+import sys
+import time
+import threading
+import signal
+import atexit
+import captouch
 import RPi.GPIO as GPIO
 from pins import ObjectCollection, AsyncWorker, StoppableThread
 
@@ -48,11 +53,11 @@ CAP_PRODUCT_ID = 107
 def help(topic = None):
     return _help[topic]
 
-## Basic thread wrapper class for delta-timed LED pulsing
-#
-#  Pulses an LED in perfect wall-clock time
-#  Small delay by 1.0/FPS to prevent unecessary workload
 class Pulse(StoppableThread):
+    '''Thread wrapper class for delta-timed LED pulsing
+
+    Pulses an LED to wall-clock time.
+    '''
     def __init__(self,pin,time_on,time_off,transition_on,transition_off):
         StoppableThread.__init__(self)
 
@@ -72,7 +77,6 @@ class Pulse(StoppableThread):
         StoppableThread.start(self)
 
     def run(self):
-        # This loop runs at the specified "FPS" uses time.time() 
         while self.stop_event.is_set() == False:
             current_time = time.time() - self.time_start
             delta = current_time % (self.transition_on+self.time_on+self.transition_off+self.time_off)
@@ -92,15 +96,15 @@ class Pulse(StoppableThread):
             elif( delta > self.transition_on + self.time_on + self.transition_off ):
                 self.pin.duty_cycle( 0 )
 
-            time.sleep(1.0/self.fps) # Pulse framerate
+            time.sleep(1.0/self.fps)
 
         self.pin.duty_cycle( 0 )
 
-## ExplorerHAT class representing a GPIO Pin
-#
-#  Pin contains methods that apply
-#  to both inputs and outputs
 class Pin(object):
+    '''Base class representing a GPIO Pin
+     
+    Pin contains methods that apply to both inputs and outputs
+    '''
     type = 'Pin'
 
     def __init__(self, pin):
@@ -121,12 +125,15 @@ class Pin(object):
         return False
 
     def is_off(self):
+        '''Returns True if pin is in LOW/OFF state'''
         return self.read() == 0
 
     def is_on(self):
+        '''Returns True if pin is in HIGH/ON state'''
         return self.read() == 1
 
     def read(self):
+        '''Returns HIGH or LOW value of pin'''
         return GPIO.input(self.pin)
 
     def stop(self):
@@ -143,6 +150,10 @@ class Pin(object):
     get = read
 
 class Motor(object):
+    '''Class representing a motor driver channel
+
+    Contains methods for driving the motor at variable speeds
+    '''
     type = 'Motor'
     
     def __init__(self, pin_fw, pin_bw):
@@ -156,12 +167,18 @@ class Motor(object):
         GPIO.setup(self.pin_bw, GPIO.OUT, initial=GPIO.LOW)
 
     def invert(self):
+        '''Inverts the motors direction'''
         self._invert = not self._invert
         self._speed = -self._speed
         self.speed(self._speed)
         return self._invert
 
     def forwards(self, speed=100):
+        '''Drives the motor forwards at given speed
+
+        Arguments:
+        * speed - Value from 0 to 100
+        '''
         if speed > 100 or speed < 0:
             raise ValueError("Speed must be between 0 and 100")
             return False
@@ -171,6 +188,11 @@ class Motor(object):
             self.speed(speed)
 
     def backwards(self, speed=100):
+        '''Drives the motor backwards at given speed
+
+        Arguments:
+        * speed - Value from 0 to 100
+        '''
         if speed > 100 or speed < 0:
             raise ValueError("Speed must be between 0 and 100")
             return False 
@@ -193,6 +215,11 @@ class Motor(object):
             self.pwm_pin = pin
 
     def speed(self, speed=100):
+        '''Drives the motor at a certain speed
+
+        Arguments:
+        * speed - Value from -100 to 100. 0 is stopped..
+        '''
         if speed > 100 or speed < -100:
             raise ValueError("Speed must be between -100 and 100")
             return False
@@ -214,17 +241,18 @@ class Motor(object):
         return speed
 
     def stop(self):
+        '''Set the speed to 0'''
         self.speed(0)
 
     forward = forwards
     backward = backwards
     reverse = invert
 
-## ExplorerHAT class representing a GPIO Input
-#
-#  Input contains methods that
-#  apply only to inputs
 class Input(Pin):
+    '''Class representing a GPIO input
+
+     Input only contains methods that apply to inputs
+    '''
 
     type = 'Input'
 
@@ -240,6 +268,7 @@ class Input(Pin):
         super(Input,self).__init__(pin)
 
     def on_high(self, callback, bouncetime=DEBOUNCE_TIME):
+        '''Attach a callback to trigger on a transition to HIGH'''
         self.handle_pressed = callback
         self._setup_callback(bouncetime)
         return True
@@ -260,16 +289,22 @@ class Input(Pin):
         return True
 
     def on_low(self, callback, bouncetime=DEBOUNCE_TIME):
+        '''Attach a callback to trigger on transition to LOW'''
         self.handle_released = callback
         self._setup_callback(bouncetime)
         return True
         
     def on_changed(self, callback, bouncetime=DEBOUNCE_TIME):
+        '''Attach a callback to trigger when changed'''
         self.handle_changed = callback
         self._setup_callback(bouncetime)
         return True
 
     def clear_events(self):
+        '''Clear all attached callbacks'''
+        self.handle_pressed = None
+        self.handle_released = None
+        self.handle_changed = None
         GPIO.remove_event_detect(self.pin)
         self.has_callback = False
 
@@ -278,14 +313,12 @@ class Input(Pin):
     pressed = on_high
     released = on_low
 
-## ExplorerHAT class representing a GPIO Output
-#
-#  Output contains methods that
-#  apply only to outputs
-#  It also contains methods for pulsing, 
-#  blinking LEDs or other attached devices
 class Output(Pin):
+    '''Class representing a GPIO Output
 
+    ONly contains methods that apply to outputs, including those for puling
+    LEDs or other attached devices.
+    '''
     type = 'Output'
 
     def __init__(self, pin):
@@ -298,8 +331,14 @@ class Output(Pin):
         self.pulsing = False
         self.fader = None
 
-    ## Fades an LED to a specific brightness over a specific time
     def fade(self,start,end,duration):
+        '''Fades an LED to a specific brightness over time
+
+        Arguments:
+        * start - Starting brightness, 0 to 255
+        * end - Ending brightness, 0 to 255
+        * duration - Duration in seconds
+        '''
         self.stop()
         time_start = time.time()
         self.pwm(PULSE_FREQUENCY,start)
@@ -317,11 +356,13 @@ class Output(Pin):
         self.fader.start()
         return True
 
-    ## Blinks an LED by working out the correct PWM frequency/duty cycle
-    #  @param self Object pointer.
-    #  @param on Time the LED should stay at 100%/on
-    #  @param off Time the LED should stay at 0%/off
     def blink(self,on=1,off=-1):
+        '''Blinks an LED by working out the correct PWM freq/duty
+
+        Arguments:
+        * on - On duration in seconds
+        * off - Off duration in seconds
+        '''
         if off == -1:
             off = on
 
@@ -346,13 +387,15 @@ class Output(Pin):
 
         return True
     
-    ## Pulses an LED
-    #  @param self Object pointer.
-    #  @param transition_on Time the transition from 0% to 100% brightness should take
-    #  @param transition_off Time the trantition from 100% to 0% brightness should take
-    #  @param time_on Time the LED should stay at 100% brightness
-    #  @param time_off Time the LED should stay at 0% brightness
     def pulse(self,transition_on=None,transition_off=None,time_on=None,time_off=None):
+        '''Pulses an LED
+
+        Arguments:
+        * transition_on - Time in seconds that the transition from 0 to 100% brightness should take.
+        * transition_off - Time in seconds that the transition from 100% to 0% brightness should take.
+        * time_on - Time the LED should stay at 100% brightness
+        * time_off - Time the LED should stay at 0% brightness
+        '''
         # This needs a thread to handle the fade in and out
 
         # Attempt to cascade parameters
@@ -370,7 +413,6 @@ class Output(Pin):
         if time_off == None:
             time_off = transition_on
 
-        # Fire up PWM if it's not running
         if self.blinking == False:
             self.pwm(PULSE_FREQUENCY,0.0)
 
@@ -383,7 +425,7 @@ class Output(Pin):
             self.pulser.time_off = time_off
             self.pulser.transition_on = transition_on
             self.pulser.transition_off = transition_off
-            self.pulser.start() # Kick off the pulse thread
+            self.pulser.start()
             self.pulsing = True
 
         self.blinking = True
@@ -391,21 +433,29 @@ class Output(Pin):
         return True
 
     def pwm(self,freq,duty_cycle = 50):
+        '''Sets specified PWM Freq/Duty on a pin
+
+        Arguments:
+        * freq - Frequency in hz
+        * duty_cycle - Value from 0 to 100
+        '''
         self.gpio_pwm.ChangeDutyCycle(duty_cycle)
         self.gpio_pwm.ChangeFrequency(freq)
         self.gpio_pwm.start(duty_cycle)
         return True
 
     def frequency(self,freq):
+        '''Change the PWM frequency'''
         self.gpio_pwm.ChangeFrequency(freq)
         return True
 
     def duty_cycle(self,duty_cycle):
+        '''Change the PWM duty cycle'''
         self.gpio_pwm.ChangeDutyCycle(duty_cycle)
         return True
 
-    ## Stops the pulsing thread
     def stop(self):
+        '''Stop any running pulsing/blinking'''
         if self.fader != None:
             self.fader.stop()
 
@@ -422,14 +472,17 @@ class Output(Pin):
         # duty cycle change.
         return True
 
-    ## Stops the pulsing thread
-    #  @param self Object pointer.
     def stop_pulse(self):
         self.pulsing = False
         self.pulser.stop()
         self.pulser = Pulse(self,0,0,0,0)
 
     def write(self,value):
+        '''Write a specific value to the output
+          
+        Arguments:
+        * value - Should be 0 or 1 for LOW/HIGH respectively
+        '''
         blinking = self.blinking
 
         self.stop()
@@ -449,25 +502,16 @@ class Output(Pin):
 
         return True
 
-    ## Turns an Output on
-    #  @param self Object pointer.
-    #
-    #  Includes handling of pulsing/blinking functions
-    #  which must be stopped before turning on
     def on(self):
+        '''Writes the value 1/HIGH/ON to the Output'''
         self.write(1)
         return True
-
-    ## Turns an Output off
-    #  @param self Object pointer.
-    #
-    #  Includes handling of pulsing/blinking functions
-    #  which must be stopped before turning off
+    
     def off(self):
+        '''Writes the value 0/LOW/OFF to the Output'''
         self.write(0)
         return True
 
-    # Alias on/off to conventional names
     high = on
     low  = off
 
@@ -482,10 +526,11 @@ class Output(Pin):
             self.write(1)
         return True
 
-## ExplorerHAT class representing an onboard LED
-#
-# 
 class Light(Output):
+    '''Class representing an LED
+
+    Contains methods that only apply to LEDs
+    '''
 
     type = 'Light'
 
@@ -599,18 +644,15 @@ def set_timeout(function,seconds):
     timeout.start()
     return True
 
-# Should this ever be exposed to the user?
 def pause():
     signal.pause()
 
-# Register a loop to run
 def loop(callback):
     global running
     running = True
     while running:
         callback()
 
-# Stop a running loop
 def stop():
     global running
     running = False
@@ -619,7 +661,6 @@ def stop():
 def is_explorer_pro():
     return explorer_pro
 
-# Exit cleanly
 def explorerhat_exit():
     print("\nExplorer HAT exiting cleanly, please wait...")
 
