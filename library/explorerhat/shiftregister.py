@@ -38,7 +38,7 @@ class ShiftRegister:
         '''
         self._latch_low()
         for p in range(8):
-            self.data.write((state >> p) & 1)
+            self.data.write(not ((state >> p) & 1))
             self._assert_clock()
         self._latch_high()
 
