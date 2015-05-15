@@ -1,4 +1,8 @@
 import time, threading
+
+running = False
+workers = {}
+
 ## Basic stoppable thread wrapper
 #
 #  Adds Event for stopping the execution loop
@@ -36,8 +40,6 @@ class AsyncWorker(StoppableThread):
             if self.todo() == False:
                 self.stop_event.set()
                 break
-
-
 
 ## Collection, represents a collection of pins
 #
@@ -137,3 +139,44 @@ class ObjectCollection:
         the sole argument.'''
         for name in self._all.keys():
             handler(self._all[name])
+
+def async_start(name,function):
+    global workers
+    workers[name] = AsyncWorker(function)
+    workers[name].start()
+    return True
+
+def async_stop(name):
+    global workers
+    workers[name].stop()
+    return True
+
+def async_stop_all():
+    global workers
+    for worker in workers:
+        print("Stopping user task: " + worker)
+        workers[worker].stop()
+    return True
+
+def set_timeout(function,seconds):
+    def fn_timeout():
+        time.sleep(seconds)
+        function()
+        return False
+    timeout = AsyncWorker(fn_timeout)
+    timeout.start()
+    return True
+
+def pause():
+    signal.pause()
+
+def loop(callback):
+    global running
+    running = True
+    while running:
+        callback()
+
+def stop():
+    global running
+    running = False
+    return True
