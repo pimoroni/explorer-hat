@@ -87,5 +87,5 @@ The 4 outputs on Explorer HAT can sink 5V, but not source. This means you need t
 
 # Documentation
 
-* [Explorer HAT Function Reference](/REFERENCE.md)
-* [Explorer HAT Pinout](/PINS.md)
+* [Explorer HAT Function Reference](/documentation/Function-reference.md)
+* [Explorer HAT Pinout](/documentation/GPIO-pins.md)
