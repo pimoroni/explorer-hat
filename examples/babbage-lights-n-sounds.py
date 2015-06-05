@@ -151,7 +151,7 @@ def get_notes(pin):
       result.append(key)
   return result
 
-def play_note((note,duration)):
+def play_note(note,duration):
   """ 
   Play a single note through our PD instance, and
   light its corresponding LED
