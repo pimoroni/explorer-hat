@@ -327,7 +327,7 @@ class Cap1xxx():
     def _calc_touch_rate(self, ms):
         ms = min(max(ms,0),560)
         scale = int((round(ms / 35.0) * 35) - 35) / 35
-        return scale
+        return int(scale)
 
     def _poll(self):
         """Single polling pass, should be called in
