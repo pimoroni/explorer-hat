@@ -24,7 +24,7 @@ class PDTone():
     self.proc_pd = subprocess.Popen(['/usr/bin/pd', '-nogui', pdfile], stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
     pid = subprocess.check_output(['/bin/pidof','pd'], )
     time.sleep(0.5)
-    self.pid = int(pid.split(' ')[0])
+    self.pid = int(pid.decode('UTF-8').split(' ')[0])
     print("Started PD with PID: " + str(pid))
   
   def connect(self):
@@ -51,7 +51,7 @@ class PDTone():
       os.remove(self.pd_file)
 
   def send(self, cmd):
-    self.socket.send(cmd + ';')
+    self.socket.send(str(cmd + ';').encode())
 
   def power_on(self):
     self.send('power 1')

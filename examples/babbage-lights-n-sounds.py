@@ -146,16 +146,18 @@ def get_notes(pin):
   button, represented by its GPIO pin number
   """
   result = []
-  for key,note in notes.iteritems():
+  for key in notes:
+    note = notes[key]
     if pin == note[1]:
       result.append(key)
   return result
 
-def play_note(note,duration):
+def play_note(note):
   """ 
   Play a single note through our PD instance, and
   light its corresponding LED
   """
+  note, duration = note
   f = notes[note][0]
   l = notes[note][1]
   explorerhat.light[l].on()
@@ -183,7 +185,7 @@ while 1:
   explorerhat.touch.one.pressed(_cont)
 
   print("Touch the left key to continue...")
-  explorerhat.light.yellow.pulse()
+  explorerhat.light.blue.pulse()
 
   while not cont:
     pass
