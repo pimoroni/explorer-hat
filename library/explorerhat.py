@@ -414,8 +414,10 @@ class Output(Pin):
         if self.fader != None:
             self.fader.stop()
 
-        self.blinking = False
-        self.stop_pulse()
+        if self.blinking:
+            self.blink(0,1)
+            self.blinking = False
+            self.stop_pulse()
 
         # Abruptly stopping PWM is a bad idea
         # unless we're writing a 1 or 0
@@ -435,9 +437,9 @@ class Output(Pin):
         self.pulser = Pulse(self,0,0,0,0)
 
     def write(self,value):
-        blinking = self.blinking
 
         self.stop()
+        blinking = self.blinking
 
         self.duty_cycle(100)
         self.gpio_pwm.stop()
