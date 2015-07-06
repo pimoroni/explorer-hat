@@ -415,7 +415,7 @@ class Output(Pin):
             self.fader.stop()
 
         if self.blinking:
-            self.blink(0,1)
+            self.blink(0,1) #need this to stop on() failing initially
             self.blinking = False
             self.stop_pulse()
 
