@@ -24,15 +24,37 @@ sudo apt-get install python-pip
 
 ## Installing the Library
 
-You should now be able to install Explorer HAT with Pip:
+You should now be able to install Explorer HAT with Pip.
+
+**Python 3:**
 
 ```bash
+sudo apt-get install python3-pip
+sudo pip-3.2 install explorerhat
+```
+
+**Python 2:**
+
+```bash
+sudo apt-get install python-pip
 sudo pip install explorerhat
 ```
 
 ## Getting Started
 
-To get started, start up a Python interactive shell:
+To get started, start up a Python 3 interactive shell:
+
+```bash
+sudo python3
+```
+
+or
+
+```bash
+sudo idle3 &
+```
+
+or Python 2:
 
 ```bash
 sudo python
@@ -41,7 +63,7 @@ sudo python
 or
 
 ```bash
-sudo idle
+sudo idle &
 ```
 
 ...and poke Explorer HAT's innards to see what it's got to offer:
