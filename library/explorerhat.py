@@ -2,11 +2,21 @@
 
 API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
+import sys
+
+try:
+    from smbus import SMBus
+except ImportError:
+    if sys.version_info[0] < 3:
+        exit("Explorer HAT requires python-smbus\nInstall with: sudo apt-get install python-smbus")
+    elif sys.version_info[0] == 3:
+        exit("Explorer HAT requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+
 import time
 import signal
 import atexit
 from cap1xxx import Cap1208
-import analog as _analog
+import ads1015
 import RPi.GPIO as GPIO
 from pins import ObjectCollection, AsyncWorker, StoppableThread
 
@@ -508,7 +518,7 @@ class AnalogInput(object):
         self._handler = None
 
     def read(self):
-        return _analog.read_se_adc(self.channel)
+        return ads1015.read_se_adc(self.channel)
 
     def sensitivity(self, sensitivity):
         self._sensitivity = sensitivity
@@ -659,7 +669,7 @@ _cap1208 = Cap1208()
 if not _cap1208._get_product_id() == CAP_PRODUCT_ID:
     exit("Explorer HAT not found...\nHave you enabled i2c?")
 
-if _analog.adc_available:
+if ads1015.adc_available:
     print("Explorer HAT Pro detected...")
     explorer_pro = True
 else:
