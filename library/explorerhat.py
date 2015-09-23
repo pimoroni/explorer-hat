@@ -1,15 +1,12 @@
-## @package ExplorerHAT
-#  API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards
 """[explorerhat]
 
 API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
-import sys
 import time
-import threading
 import signal
 import atexit
 from cap1xxx import Cap1208
+import analog as _analog
 import RPi.GPIO as GPIO
 from pins import ObjectCollection, AsyncWorker, StoppableThread
 
@@ -30,18 +27,18 @@ OUT3 = 13
 OUT4 = 16
 
 # 5v Tolerant Inputs
-IN1  = 23
-IN2  = 22
-IN3  = 24
-IN4  = 25
+IN1 = 23
+IN2 = 22
+IN3 = 24
+IN4 = 25
 
 # Motor, via DRV8833PWP Dual H-Bridge
-M1B  = 19
-M1F  = 20
-M2B  = 21
-M2F  = 26
+M1B = 19
+M1F = 20
+M2B = 21
+M2F = 26
 
-# Number of times to udpate
+# Number of times to update
 # pulsing LEDs per second
 PULSE_FPS = 50
 PULSE_FREQUENCY = 100
@@ -50,22 +47,24 @@ DEBOUNCE_TIME = 20
 
 CAP_PRODUCT_ID = 107
 
-def help(topic = None):
+
+def help(topic=None):
     return _help[topic]
 
-## Basic thread wrapper class for delta-timed LED pulsing
-#
-#  Pulses an LED in perfect wall-clock time
-#  Small delay by 1.0/FPS to prevent unecessary workload
+
 class Pulse(StoppableThread):
-    def __init__(self,pin,time_on,time_off,transition_on,transition_off):
+    """Basic thread wrapper class for delta-timed LED pulsing
+
+    Pulses an LED in perfect wall-clock time
+    Small delay by 1.0/FPS to prevent unnecessary workload"""
+    def __init__(self, pin, time_on, time_off, transition_on, transition_off):
         StoppableThread.__init__(self)
 
         self.pin = pin
-        self.time_on = (time_on)
-        self.time_off = (time_off)
-        self.transition_on = (transition_on)
-        self.transition_off = (transition_off)
+        self.time_on = time_on
+        self.time_off = time_off
+        self.transition_on = transition_on
+        self.transition_off = transition_off
 
         self.fps = PULSE_FPS
 
@@ -77,35 +76,36 @@ class Pulse(StoppableThread):
         StoppableThread.start(self)
 
     def run(self):
-        # This loop runs at the specified "FPS" uses time.time() 
-        while self.stop_event.is_set() == False:
+        # This loop runs at the specified "FPS" uses time.time()
+        while not self.stop_event.is_set():
             current_time = time.time() - self.time_start
             delta = current_time % (self.transition_on+self.time_on+self.transition_off+self.time_off)
 
-            if( delta <= self.transition_on ):
+            if delta <= self.transition_on:
                 # Transition On Phase
-                self.pin.duty_cycle( round(( 100.0 / self.transition_on ) * delta) )
+                self.pin.duty_cycle(round((100.0 / self.transition_on) * delta))
 
-            elif( delta > self.transition_on + self.time_on and delta <= self.transition_on + self.time_on + self.transition_off ):
+            elif delta > self.transition_on + self.time_on and delta <= self.transition_on + self.time_on + self.transition_off:
+
                 # Transition Off Phase
                 current_delta = delta - self.transition_on - self.time_on
-                self.pin.duty_cycle( round(100.0 - ( ( 100.0 / self.transition_off ) * current_delta )) )
+                self.pin.duty_cycle(round(100.0 - ((100.0 / self.transition_off) * current_delta)))
 
-            elif( delta > self.transition_on and delta <= self.transition_on + self.time_on ):
-                self.pin.duty_cycle( 100 )
+            elif delta > self.transition_on < delta <= self.transition_on + self.time_on:
+                self.pin.duty_cycle(100)
 
-            elif( delta > self.transition_on + self.time_on + self.transition_off ):
-                self.pin.duty_cycle( 0 )
+            elif delta > self.transition_on + self.time_on + self.transition_off:
+                self.pin.duty_cycle(0)
 
-            time.sleep(1.0/self.fps) # Pulse framerate
+            time.sleep(1.0/self.fps)
 
-        self.pin.duty_cycle( 0 )
+        self.pin.duty_cycle(0)
 
-## ExplorerHAT class representing a GPIO Pin
-#
-#  Pin contains methods that apply
-#  to both inputs and outputs
+
 class Pin(object):
+    """ExplorerHAT class representing a GPIO Pin
+
+    Pin contains methods that apply to both inputs and outputs"""
     type = 'Pin'
 
     def __init__(self, pin):
@@ -147,9 +147,10 @@ class Pin(object):
     is_low = is_off
     get = read
 
+
 class Motor(object):
     type = 'Motor'
-    
+
     def __init__(self, pin_fw, pin_bw):
         self.pwm = None
         self.pwm_pin = None
@@ -178,19 +179,19 @@ class Motor(object):
     def backwards(self, speed=100):
         if speed > 100 or speed < 0:
             raise ValueError("Speed must be between 0 and 100")
-            return False 
+            return False
         if self._invert:
             self.speed(speed)
         else:
             self.speed(-speed)
 
     def _duty_cycle(self, duty_cycle):
-        if self.pwm != None:
+        if self.pwm is not None:
             self.pwm.ChangeDutyCycle(duty_cycle)
 
     def _setup_pwm(self, pin, duty_cycle):
         if self.pwm_pin != pin:
-            if self.pwm != None:
+            if self.pwm is not None:
                 self.pwm.stop()
                 time.sleep(0.005)
             self.pwm = GPIO.PWM(pin, 100)
@@ -200,7 +201,7 @@ class Motor(object):
     def speed(self, speed=100):
         if speed > 100 or speed < -100:
             raise ValueError("Speed must be between -100 and 100")
-            return False
+
         self._speed = speed
         if speed > 0:
             GPIO.output(self.pin_bw, GPIO.LOW)
@@ -211,9 +212,9 @@ class Motor(object):
             self._setup_pwm(self.pin_bw, abs(speed))
             self._duty_cycle(abs(speed))
         if speed == 0:
-            if self.pwm != None:
-              self.pwm.stop()
-              time.sleep(0.005)
+            if self.pwm is not None:
+                self.pwm.stop()
+                time.sleep(0.005)
             self.pwm_pin = None
             self.pwm = None
         return speed
@@ -225,11 +226,11 @@ class Motor(object):
     backward = backwards
     reverse = invert
 
-## ExplorerHAT class representing a GPIO Input
-#
-#  Input contains methods that
-#  apply only to inputs
+
 class Input(Pin):
+    """ExplorerHAT class representing a GPIO Input
+
+    Input contains methods that apply only to inputs"""
 
     type = 'Input'
 
@@ -242,7 +243,8 @@ class Input(Pin):
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         else:
             GPIO.setup(pin, GPIO.IN)
-        super(Input,self).__init__(pin)
+
+        super(Input, self).__init__(pin)
 
     def on_high(self, callback, bouncetime=DEBOUNCE_TIME):
         self.handle_pressed = callback
@@ -268,7 +270,7 @@ class Input(Pin):
         self.handle_released = callback
         self._setup_callback(bouncetime)
         return True
-        
+
     def on_changed(self, callback, bouncetime=DEBOUNCE_TIME):
         self.handle_changed = callback
         self._setup_callback(bouncetime)
@@ -283,50 +285,51 @@ class Input(Pin):
     pressed = on_high
     released = on_low
 
-## ExplorerHAT class representing a GPIO Output
-#
-#  Output contains methods that
-#  apply only to outputs
-#  It also contains methods for pulsing, 
-#  blinking LEDs or other attached devices
-class Output(Pin):
 
+class Output(Pin):
+    """ExplorerHAT class representing a GPIO Output
+
+    Output contains methods that apply only to outputs.
+    It also contains methods for pulsing, blinking LEDs or other attached devices"""
     type = 'Output'
 
     def __init__(self, pin):
         GPIO.setup(pin, GPIO.OUT, initial=0)
-        super(Output,self).__init__(pin)
-        self.gpio_pwm = GPIO.PWM(pin,1)
+        super(Output, self).__init__(pin)
+        self.gpio_pwm = GPIO.PWM(pin, 1)
 
-        self.pulser = Pulse(self,0,0,0,0)
+        self.pulser = Pulse(self, 0, 0, 0, 0)
         self.blinking = False
         self.pulsing = False
         self.fader = None
 
-    ## Fades an LED to a specific brightness over a specific time
-    def fade(self,start,end,duration):
+    # Fades an LED to a specific brightness over a specific time
+    def fade(self, start, end, duration):
         self.stop()
         time_start = time.time()
-        self.pwm(PULSE_FREQUENCY,start)
+        self.pwm(PULSE_FREQUENCY, start)
+
         def _fade():
             if time.time() - time_start >= duration:
                 self.duty_cycle(end)
                 return False
-            
+
             current = (time.time() - time_start) / duration
             brightness = start + (float(end-start) * current)
             self.duty_cycle(round(brightness))
             time.sleep(0.1)
-            
+
         self.fader = AsyncWorker(_fade)
         self.fader.start()
         return True
 
-    ## Blinks an LED by working out the correct PWM frequency/duty cycle
-    #  @param self Object pointer.
-    #  @param on Time the LED should stay at 100%/on
-    #  @param off Time the LED should stay at 0%/off
-    def blink(self,on=1,off=-1):
+    def blink(self, on=1, off=-1):
+        """Blinks an LED by working out the correct PWM frequency/duty cycle
+
+        @param self Object pointer.
+        @param on Time the LED should stay at 100%/on
+        @param off Time the LED should stay at 0%/off"""
+
         if off == -1:
             off = on
 
@@ -339,25 +342,27 @@ class Output(Pin):
 
         # Stop the thread that's pulsing the LED
         if self.pulsing:
-            self.stop_pulse();
+            self.stop_pulse()
 
         # Use pure PWM blinking, because threads are fugly
         if self.blinking:
             self.frequency(1.0/total)
             self.duty_cycle(duty_cycle)
         else:
-            self.pwm(1.0/total,duty_cycle)
+            self.pwm(1.0/total, duty_cycle)
             self.blinking = True
 
         return True
-    
-    ## Pulses an LED
-    #  @param self Object pointer.
-    #  @param transition_on Time the transition from 0% to 100% brightness should take
-    #  @param transition_off Time the trantition from 100% to 0% brightness should take
-    #  @param time_on Time the LED should stay at 100% brightness
-    #  @param time_off Time the LED should stay at 0% brightness
-    def pulse(self,transition_on=None,transition_off=None,time_on=None,time_off=None):
+
+    def pulse(self, transition_on=None, transition_off=None, time_on=None, time_off=None):
+        """Pulses an LED
+
+        @param self Object pointer.
+        @param transition_on Time the transition from 0% to 100% brightness should take
+        @param transition_off Time the trantition from 100% to 0% brightness should take
+        @param time_on Time the LED should stay at 100% brightness
+        @param time_off Time the LED should stay at 0% brightness"""
+
         # This needs a thread to handle the fade in and out
 
         # Attempt to cascade parameters
@@ -366,23 +371,23 @@ class Output(Pin):
         # pulse(0.5,1.0,1.0) = pulse(0.5,1.0,1.0,1.0)
         # pulse(0.5,1.0,1.0,0.5) = -
 
-        if transition_on == None:
+        if transition_on is None:
             transition_on = 0.5
-        if transition_off == None:
+        if transition_off is None:
             transition_off = transition_on
-        if time_on == None:
+        if time_on is None:
             time_on = transition_on
-        if time_off == None:
+        if time_off is None:
             time_off = transition_on
 
         # Fire up PWM if it's not running
-        if self.blinking == False:
-            self.pwm(PULSE_FREQUENCY,0.0)
+        if not self.blinking:
+            self.pwm(PULSE_FREQUENCY, 0.0)
 
         # pulse(x,y,0,0) is basically just a regular blink
         # only fire up a thread if we really need it
         if transition_on == 0 and transition_off == 0:
-            self.blink(time_on,time_off)
+            self.blink(time_on, time_off)
         else:
             self.pulser.time_on = time_on
             self.pulser.time_off = time_off
@@ -395,23 +400,23 @@ class Output(Pin):
 
         return True
 
-    def pwm(self,freq,duty_cycle = 50):
+    def pwm(self, freq, duty_cycle=50):
         self.gpio_pwm.ChangeDutyCycle(duty_cycle)
         self.gpio_pwm.ChangeFrequency(freq)
         self.gpio_pwm.start(duty_cycle)
         return True
 
-    def frequency(self,freq):
+    def frequency(self, freq):
         self.gpio_pwm.ChangeFrequency(freq)
         return True
 
-    def duty_cycle(self,duty_cycle):
+    def duty_cycle(self, duty_cycle):
         self.gpio_pwm.ChangeDutyCycle(duty_cycle)
         return True
 
-    ## Stops the pulsing thread
     def stop(self):
-        if self.fader != None:
+        """Spops all animation"""
+        if self.fader is not None:
             self.fader.stop()
 
         self.blinking = False
@@ -427,14 +432,15 @@ class Output(Pin):
         # duty cycle change.
         return True
 
-    ## Stops the pulsing thread
-    #  @param self Object pointer.
     def stop_pulse(self):
+        """Stops the pulsing thread
+
+        @param self Object pointer."""
         self.pulsing = False
         self.pulser.stop()
-        self.pulser = Pulse(self,0,0,0,0)
+        self.pulser = Pulse(self, 0, 0, 0, 0)
 
-    def write(self,value):
+    def write(self, value):
         blinking = self.blinking
 
         self.stop()
@@ -450,52 +456,45 @@ class Output(Pin):
         if blinking and value == 1:
             time.sleep(0.02)
 
-        GPIO.output(self.pin,value)
+        GPIO.output(self.pin, value)
 
         return True
 
-    ## Turns an Output on
-    #  @param self Object pointer.
-    #
-    #  Includes handling of pulsing/blinking functions
-    #  which must be stopped before turning on
     def on(self):
+        """Turns an Output on
+        @param self Object pointer."""
         self.write(1)
         return True
 
-    ## Turns an Output off
-    #  @param self Object pointer.
-    #
-    #  Includes handling of pulsing/blinking functions
-    #  which must be stopped before turning off
     def off(self):
+        """Turns an Output off
+        @param self Object pointer."""
         self.write(0)
         return True
 
-    # Alias on/off to conventional names
     high = on
-    low  = off
+    low = off
 
     def toggle(self):
-        if( self.blinking ):
+        if self.blinking:
             self.write(0)
             return True
 
-        if( self.read() == 1 ):
+        if self.read() == 1:
             self.write(0)
         else:
             self.write(1)
+
         return True
 
-## ExplorerHAT class representing an onboard LED
-#
-# 
+
 class Light(Output):
+    """ExplorerHAT class representing an onboard LED"""
 
     type = 'Light'
 
-    def __init__(self,pin):
-        super(Light,self).__init__(pin)
+    def __init__(self, pin):
+        super(Light, self).__init__(pin)
 
 
 class AnalogInput(object):
@@ -506,6 +505,7 @@ class AnalogInput(object):
         self._sensitivity = 0.1
         self._t_watch = None
         self.last_value = None
+        self._handler = None
 
     def read(self):
         return _analog.read_se_adc(self.channel)
@@ -515,39 +515,42 @@ class AnalogInput(object):
 
     def changed(self, handler, sensitivity=None):
         self._handler = handler
-        if sensitivity != None:
+        if sensitivity is not None:
             self._sensitivity = sensitivity
-        if self._t_watch == None:
+        if self._t_watch is None:
             self._t_watch = AsyncWorker(self._watch)
             self._t_watch.start()
- 
+
     def _watch(self):
         value = self.read()
-        if self.last_value != None and abs(value-self.last_value) > self._sensitivity:
+        if self.last_value is not None and abs(value-self.last_value) > self._sensitivity:
             if callable(self._handler):
                 self._handler(self, value)
         self.last_value = value
         time.sleep(0.01)
 
+
 class CapTouchSettings(object):
     type = 'Cap Touch Settings'
 
-    def enable_multitouch(self, en=True):
+    @staticmethod
+    def enable_multitouch(en=True):
         _cap1208.enable_multitouch(en)
+
 
 class CapTouchInput(object):
     type = 'Cap Touch Input'
-    
+
     def __init__(self, channel, alias):
         self.alias = alias
         self._pressed = False
         self._held = False
         self.channel = channel
-        self.handlers = {'press':None, 'release':None, 'held':None}
-        for event in ['press','release','held']:
-            _cap1208.on(channel = self.channel, event=event, handler=self._handle_state)
+        self.handlers = {'press': None, 'release': None, 'held': None}
+        for event in ['press', 'release', 'held']:
+            _cap1208.on(channel=self.channel, event=event, handler=self._handle_state)
 
-    def _handle_state(self, channel,event):
+    def _handle_state(self, channel, event):
         if channel == self.channel:
             if event == 'press':
                 self._pressed = True
@@ -577,16 +580,19 @@ class CapTouchInput(object):
 running = False
 workers = {}
 
-def async_start(name,function):
+
+def async_start(name, function):
     global workers
     workers[name] = AsyncWorker(function)
     workers[name].start()
     return True
 
+
 def async_stop(name):
     global workers
     workers[name].stop()
     return True
+
 
 def async_stop_all():
     global workers
@@ -594,6 +600,7 @@ def async_stop_all():
         print("Stopping user task: " + worker)
         workers[worker].stop()
     return True
+
 
 def set_timeout(function,seconds):
     def fn_timeout():
@@ -604,27 +611,28 @@ def set_timeout(function,seconds):
     timeout.start()
     return True
 
-# Should this ever be exposed to the user?
+
 def pause():
     signal.pause()
 
-# Register a loop to run
+
 def loop(callback):
     global running
     running = True
     while running:
         callback()
 
-# Stop a running loop
+
 def stop():
     global running
     running = False
     return True
 
+
 def is_explorer_pro():
     return explorer_pro
 
-# Exit cleanly
+
 def explorerhat_exit():
     print("\nExplorer HAT exiting cleanly, please wait...")
 
@@ -647,16 +655,14 @@ def explorerhat_exit():
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-
 _cap1208 = Cap1208()
 if not _cap1208._get_product_id() == CAP_PRODUCT_ID:
     exit("Explorer HAT not found...\nHave you enabled i2c?")
-    
-import analog as _analog
+
 if _analog.adc_available:
     print("Explorer HAT Pro detected...")
     explorer_pro = True
-else:    
+else:
     print("Explorer HAT Basic detected...")
     print("If this is incorrect, please check your i2c settings!")
     explorer_pro = False
@@ -666,7 +672,7 @@ atexit.register(explorerhat_exit)
 try:
     settings = ObjectCollection()
     settings._add(touch = CapTouchSettings())
- 
+
     light = ObjectCollection()
     light._add(blue   = Light(LED1))
     light._add(yellow = Light(LED2))
@@ -781,7 +787,7 @@ The 4 outputs are named "one" to "four" and can be called like so:
 Explorer HAT includs 4 LEDs; Yellow, Blue, Red and Green
 
 You can call them like so:
-    
+
     explorerhat.light.yellow
     ...
     explorerhat.light.green
