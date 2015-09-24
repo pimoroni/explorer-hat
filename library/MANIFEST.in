@@ -1,5 +1,5 @@
 include explorerhat.py
-include analog.py
+include ads1015.py
 include captouch.py
 include README.md
 include README.txt
