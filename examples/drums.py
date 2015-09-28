@@ -29,7 +29,7 @@ def handle(ch, evt):
   else:
     led = ch - 1
   if evt == 'press':
-    explorerhat.light[led].on()
+    explorerhat.light[led].fade(0,100,0.1)
     sounds[ch-1].play(loops=0)
   else:
     explorerhat.light[led].off()

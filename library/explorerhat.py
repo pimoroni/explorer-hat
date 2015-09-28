@@ -51,7 +51,7 @@ M2F = 26
 # Number of times to update
 # pulsing LEDs per second
 PULSE_FPS = 50
-PULSE_FREQUENCY = 100
+PULSE_FREQUENCY = 1000
 
 DEBOUNCE_TIME = 20
 
@@ -70,6 +70,7 @@ class Pulse(StoppableThread):
     def __init__(self, pin, time_on, time_off, transition_on, transition_off):
         StoppableThread.__init__(self)
 
+        self._paused = False
         self.pin = pin
         self.time_on = time_on
         self.time_off = time_off
@@ -82,30 +83,43 @@ class Pulse(StoppableThread):
         self.time_start = time.time()
 
     def start(self):
+        self.pin.frequency(PULSE_FREQUENCY)
+
+        if self._paused:
+            self.time_start = time.time()
+            self._paused = False
+            return
+
         self.time_start = time.time()
         StoppableThread.start(self)
+
+    def pause(self):
+        self._paused = True
 
     def run(self):
         # This loop runs at the specified "FPS" uses time.time()
         while not self.stop_event.is_set():
-            current_time = time.time() - self.time_start
-            delta = current_time % (self.transition_on+self.time_on+self.transition_off+self.time_off)
+            if not self._paused:
+                current_time = time.time() - self.time_start
+                delta = current_time % (self.transition_on+self.time_on+self.transition_off+self.time_off)
 
-            if delta <= self.transition_on:
-                # Transition On Phase
-                self.pin.duty_cycle(round((100.0 / self.transition_on) * delta))
+                time_off = self.transition_on + self.time_on + self.transition_off
+                time_on = self.transition_on + self.time_on
 
-            elif delta > self.transition_on + self.time_on and delta <= self.transition_on + self.time_on + self.transition_off:
+                if delta <= self.transition_on:
+                    # Transition On Phase
+                    self.pin.duty_cycle(round((100.0 / self.transition_on) * delta))
 
-                # Transition Off Phase
-                current_delta = delta - self.transition_on - self.time_on
-                self.pin.duty_cycle(round(100.0 - ((100.0 / self.transition_off) * current_delta)))
+                elif time_on < delta <= time_off:
+                    # Transition Off Phase
+                    current_delta = delta - self.transition_on - self.time_on
+                    self.pin.duty_cycle(round(100.0 - ((100.0 / self.transition_off) * current_delta)))
 
-            elif delta > self.transition_on < delta <= self.transition_on + self.time_on:
-                self.pin.duty_cycle(100)
+                elif delta > self.transition_on < delta <= time_on:
+                    self.pin.duty_cycle(100)
 
-            elif delta > self.transition_on + self.time_on + self.transition_off:
-                self.pin.duty_cycle(0)
+                elif delta > time_off:
+                    self.pin.duty_cycle(0)
 
             time.sleep(1.0/self.fps)
 
@@ -162,14 +176,19 @@ class Motor(object):
     type = 'Motor'
 
     def __init__(self, pin_fw, pin_bw):
-        self.pwm = None
-        self.pwm_pin = None
         self._invert = False
         self.pin_fw = pin_fw
         self.pin_bw = pin_bw
         self._speed = 0
+
         GPIO.setup(self.pin_fw, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.pin_bw, GPIO.OUT, initial=GPIO.LOW)
+
+        self.pwm_fw = GPIO.PWM(self.pin_fw, 100)
+        self.pwm_fw.start(0)
+
+        self.pwm_bw = GPIO.PWM(self.pin_bw, 100)
+        self.pwm_bw.start(0)
 
     def invert(self):
         self._invert = not self._invert
@@ -180,7 +199,6 @@ class Motor(object):
     def forwards(self, speed=100):
         if speed > 100 or speed < 0:
             raise ValueError("Speed must be between 0 and 100")
-            return False
         if self._invert:
             self.speed(-speed)
         else:
@@ -189,24 +207,10 @@ class Motor(object):
     def backwards(self, speed=100):
         if speed > 100 or speed < 0:
             raise ValueError("Speed must be between 0 and 100")
-            return False
         if self._invert:
             self.speed(speed)
         else:
             self.speed(-speed)
-
-    def _duty_cycle(self, duty_cycle):
-        if self.pwm is not None:
-            self.pwm.ChangeDutyCycle(duty_cycle)
-
-    def _setup_pwm(self, pin, duty_cycle):
-        if self.pwm_pin != pin:
-            if self.pwm is not None:
-                self.pwm.stop()
-                time.sleep(0.005)
-            self.pwm = GPIO.PWM(pin, 100)
-            self.pwm.start(duty_cycle)
-            self.pwm_pin = pin
 
     def speed(self, speed=100):
         if speed > 100 or speed < -100:
@@ -214,19 +218,15 @@ class Motor(object):
 
         self._speed = speed
         if speed > 0:
-            GPIO.output(self.pin_bw, GPIO.LOW)
-            self._setup_pwm(self.pin_fw, speed)
-            self._duty_cycle(speed)
+            self.pwm_bw.ChangeDutyCycle(0)
+            self.pwm_fw.ChangeDutyCycle(speed)
         if speed < 0:
-            GPIO.output(self.pin_fw, GPIO.LOW)
-            self._setup_pwm(self.pin_bw, abs(speed))
-            self._duty_cycle(abs(speed))
+            self.pwm_fw.ChangeDutyCycle(0)
+            self.pwm_bw.ChangeDutyCycle(abs(speed))
         if speed == 0:
-            if self.pwm is not None:
-                self.pwm.stop()
-                time.sleep(0.005)
-            self.pwm_pin = None
-            self.pwm = None
+            self.pwm_fw.ChangeDutyCycle(0)
+            self.pwm_bw.ChangeDutyCycle(0)
+
         return speed
 
     def stop(self):
@@ -306,28 +306,43 @@ class Output(Pin):
     def __init__(self, pin):
         GPIO.setup(pin, GPIO.OUT, initial=0)
         super(Output, self).__init__(pin)
-        self.gpio_pwm = GPIO.PWM(pin, 1)
+        self.gpio_pwm = GPIO.PWM(pin, PULSE_FREQUENCY)
+        self.gpio_pwm.start(0)
 
         self.pulser = Pulse(self, 0, 0, 0, 0)
         self.blinking = False
         self.pulsing = False
+        self.fading = False
         self.fader = None
+        self._value = 0
 
-    # Fades an LED to a specific brightness over a specific time
+    def __del__(self):
+        self.gpio_pwm.stop()
+        Pin.__del__(self)
+
     def fade(self, start, end, duration):
+        """Fades an LED to a specific brightness over a specific time in seconds
+
+        @param self Object pointer.
+        @param start Starting brightness %
+        @param end Ending brightness %
+        @param duration Time duration ( in seconds ) of the fade"""
         self.stop()
         time_start = time.time()
         self.pwm(PULSE_FREQUENCY, start)
 
         def _fade():
+            self.fading = True
+
             if time.time() - time_start >= duration:
                 self.duty_cycle(end)
+                self.fading = False
                 return False
 
             current = (time.time() - time_start) / duration
             brightness = start + (float(end-start) * current)
             self.duty_cycle(round(brightness))
-            time.sleep(0.1)
+            time.sleep(1.0 / PULSE_FPS)
 
         self.fader = AsyncWorker(_fade)
         self.fader.start()
@@ -340,6 +355,8 @@ class Output(Pin):
         @param on Time the LED should stay at 100%/on
         @param off Time the LED should stay at 0%/off"""
 
+        self.stop()
+
         if off == -1:
             off = on
 
@@ -350,17 +367,10 @@ class Output(Pin):
 
         duty_cycle = 100.0 * (on/total)
 
-        # Stop the thread that's pulsing the LED
-        if self.pulsing:
-            self.stop_pulse()
-
-        # Use pure PWM blinking, because threads are fugly
-        if self.blinking:
-            self.frequency(1.0/total)
-            self.duty_cycle(duty_cycle)
-        else:
-            self.pwm(1.0/total, duty_cycle)
-            self.blinking = True
+        # Use pure PWM blinking, because threads are ugly
+        self.frequency(1.0/total)
+        self.duty_cycle(duty_cycle)
+        self.blinking = True
 
         return True
 
@@ -372,6 +382,8 @@ class Output(Pin):
         @param transition_off Time the trantition from 100% to 0% brightness should take
         @param time_on Time the LED should stay at 100% brightness
         @param time_off Time the LED should stay at 0% brightness"""
+
+        self.stop()
 
         # This needs a thread to handle the fade in and out
 
@@ -390,30 +402,25 @@ class Output(Pin):
         if time_off is None:
             time_off = transition_on
 
-        # Fire up PWM if it's not running
-        if not self.blinking:
-            self.pwm(PULSE_FREQUENCY, 0.0)
-
         # pulse(x,y,0,0) is basically just a regular blink
         # only fire up a thread if we really need it
         if transition_on == 0 and transition_off == 0:
             self.blink(time_on, time_off)
+            self.blinking = True
         else:
             self.pulser.time_on = time_on
             self.pulser.time_off = time_off
             self.pulser.transition_on = transition_on
             self.pulser.transition_off = transition_off
-            self.pulser.start() # Kick off the pulse thread
+            self.pulser.start()
             self.pulsing = True
-
-        self.blinking = True
 
         return True
 
     def pwm(self, freq, duty_cycle=50):
         self.gpio_pwm.ChangeDutyCycle(duty_cycle)
         self.gpio_pwm.ChangeFrequency(freq)
-        self.gpio_pwm.start(duty_cycle)
+        #self.gpio_pwm.start(duty_cycle)
         return True
 
     def frequency(self, freq):
@@ -426,20 +433,26 @@ class Output(Pin):
 
     def stop(self):
         """Spops all animation"""
-        if self.fader is not None:
+        if self.fading:
             self.fader.stop()
+            self.fading = False
 
-        self.blinking = False
-        self.stop_pulse()
+        if self.pulsing:
+            self.pulsing = False
+            self.pulser.pause()
 
-        # Abruptly stopping PWM is a bad idea
-        # unless we're writing a 1 or 0
-        # So don't inherit the parent classes
-        # stop() since weird bugs happen
+        if self.blinking:
+            self.blinking = False
 
-        # Threaded PWM access was aborting with
-        # no errors when stop coincided with a
-        # duty cycle change.
+        #self.gpio_pwm.stop()
+        #time.sleep(0.01)
+        if self._value:
+            self.duty_cycle(100)
+        else:
+            self.duty_cycle(0)
+
+        #GPIO.output(self.pin, self._value)
+
         return True
 
     def stop_pulse(self):
@@ -450,23 +463,29 @@ class Output(Pin):
         self.pulser.stop()
         self.pulser = Pulse(self, 0, 0, 0, 0)
 
+    def brightness(self, value):
+        if not 0 <= value <= 100:
+            raise ValueError("Brightness must be between 0 and 100")
+
+        self.frequency(PULSE_FREQUENCY)
+        self.duty_cycle(value)
+
     def write(self, value):
-        blinking = self.blinking
+        if value is not True and value is not False and value is not 1 and value is not 0:
+            raise ValueError("You must write a value of 1/True or 0/False")
 
         self.stop()
+        self._value = value
 
-        self.duty_cycle(100)
-        self.gpio_pwm.stop()
+        self.frequency(PULSE_FREQUENCY)
 
-        # Some gymnastics here to fix a bug ( in RPi.GPIO?)
-        # That occurs when trying to output(1) immediately
-        # after stopping the PWM
+        #print("Writing {} to pin {}".format(value, self.pin))
 
-        # A small delay is needed. Ugly, but it works
-        if blinking and value == 1:
-            time.sleep(0.02)
-
-        GPIO.output(self.pin, value)
+        # GPIO.output(self.pin, value)
+        if self._value:
+            self.duty_cycle(100)
+        else:
+            self.duty_cycle(0)
 
         return True
 
@@ -486,11 +505,9 @@ class Output(Pin):
     low = off
 
     def toggle(self):
-        if self.blinking:
-            self.write(0)
-            return True
+        self.stop()
 
-        if self.read() == 1:
+        if self.read():
             self.write(0)
         else:
             self.write(1)
@@ -566,7 +583,7 @@ class CapTouchInput(object):
                 self._pressed = True
             elif event == 'held':
                 self._held = True
-            elif event in ['release','none']:
+            elif event in ['release', 'none']:
                 self._pressed = False
                 self._held = False
             if callable(self.handlers[event]):
@@ -612,7 +629,7 @@ def async_stop_all():
     return True
 
 
-def set_timeout(function,seconds):
+def set_timeout(function, seconds):
     def fn_timeout():
         time.sleep(seconds)
         function()
@@ -647,12 +664,10 @@ def explorerhat_exit():
     print("\nExplorer HAT exiting cleanly, please wait...")
 
     print("Stopping flashy things...")
-    try:
-        output.stop()
-        input.stop()
-        light.stop()
-    except AttributeError:
-        pass
+    output.stop()
+    input.stop()
+    light.stop()
+    light.stop_pulse()
 
     print("Stopping user tasks...")
     async_stop_all()
@@ -681,50 +696,49 @@ atexit.register(explorerhat_exit)
 
 try:
     settings = ObjectCollection()
-    settings._add(touch = CapTouchSettings())
+    settings._add(touch=CapTouchSettings())
 
     light = ObjectCollection()
-    light._add(blue   = Light(LED1))
-    light._add(yellow = Light(LED2))
-    light._add(red    = Light(LED3))
-    light._add(green  = Light(LED4))
-    light._alias(amber = 'yellow')
+    light._add(blue=Light(LED1))
+    light._add(yellow=Light(LED2))
+    light._add(red=Light(LED3))
+    light._add(green=Light(LED4))
+    light._alias(amber='yellow')
 
     output = ObjectCollection()
-    output._add(one   = Output(OUT1))
-    output._add(two   = Output(OUT2))
-    output._add(three = Output(OUT3))
-    output._add(four  = Output(OUT4))
+    output._add(one=Output(OUT1))
+    output._add(two=Output(OUT2))
+    output._add(three=Output(OUT3))
+    output._add(four=Output(OUT4))
 
     input = ObjectCollection()
-    input._add(one   = Input(IN1))
-    input._add(two   = Input(IN2))
-    input._add(three = Input(IN3))
-    input._add(four  = Input(IN4))
-
+    input._add(one=Input(IN1))
+    input._add(two=Input(IN2))
+    input._add(three=Input(IN3))
+    input._add(four=Input(IN4))
 
     touch = ObjectCollection()
-    touch._add(one   = CapTouchInput(4,1))
-    touch._add(two   = CapTouchInput(5,2))
-    touch._add(three = CapTouchInput(6,3))
-    touch._add(four  = CapTouchInput(7,4))
-    touch._add(five  = CapTouchInput(0,5))
-    touch._add(six   = CapTouchInput(1,6))
-    touch._add(seven = CapTouchInput(2,7))
-    touch._add(eight = CapTouchInput(3,8))
+    touch._add(one=CapTouchInput(4, 1))
+    touch._add(two=CapTouchInput(5, 2))
+    touch._add(three=CapTouchInput(6, 3))
+    touch._add(four=CapTouchInput(7, 4))
+    touch._add(five=CapTouchInput(0, 5))
+    touch._add(six=CapTouchInput(1, 6))
+    touch._add(seven=CapTouchInput(2, 7))
+    touch._add(eight=CapTouchInput(3, 8))
 
 # Check for the existence of the ADC
 # to determine if we're running Pro
 
     analog = ObjectCollection()
-    motor  = ObjectCollection()
+    motor = ObjectCollection()
     if is_explorer_pro():
-        motor._add(one = Motor(M1F, M1B))
-        motor._add(two = Motor(M2F, M2B))
-        analog._add(one   = AnalogInput(3))
-        analog._add(two   = AnalogInput(2))
-        analog._add(three = AnalogInput(1))
-        analog._add(four  = AnalogInput(0))
+        motor._add(one=Motor(M1F, M1B))
+        motor._add(two=Motor(M2F, M2B))
+        analog._add(one=AnalogInput(3))
+        analog._add(two=AnalogInput(2))
+        analog._add(three=AnalogInput(1))
+        analog._add(four=AnalogInput(0))
 except RuntimeError:
     print("YOu must be root to use Explorer HAT!")
     ready = False
@@ -824,9 +838,10 @@ The two motors are named "one" and "two" and can be called like so:
 ''',
 }
 
-def help(topic = 'index'):
+
+def help(topic='index'):
     if topic.lower() in _help.keys():
-        print("HELP{}\n\n{}\n{}".format('-'*66,_help[topic.lower()],'-'*70))
+        print("HELP{}\n\n{}\n{}".format('-'*66, _help[topic.lower()], '-'*70))
     else:
         print(_help['index'])
     return None

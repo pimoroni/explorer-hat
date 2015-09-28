@@ -34,7 +34,7 @@ class AsyncWorker(StoppableThread):
         while not self.stop_event.is_set():
             # Explicitly check for False being returned
             # from worker, IE: Don't allow None
-            if self.todo() == False:
+            if self.todo() is False:
                 self.stop_event.set()
                 break
 

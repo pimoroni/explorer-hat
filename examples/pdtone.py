@@ -2,6 +2,8 @@ import os, socket, time, subprocess, atexit, tempfile
 
 class PDTone():
   def __init__(self, pd_file=None):
+    if not os.path.isfile("/usr/bin/pd"):
+        exit("This library requires PD; sudo apt-get install pd")
     self.port = 3000
     self.tempfile = None
     if pd_file == None:
