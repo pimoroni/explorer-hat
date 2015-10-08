@@ -2,7 +2,23 @@
 
 This library is based on the Pibrella framework, you might find much of it familiar. It's got added motors, capacitive touch and analog input though!
 
-## Pre-requisites
+## Installing The Library
+
+### The Easy Way
+
+Just run out installer, fire up Terminal which you'll find in Menu -> Accessories -> Terminal on your Raspberry Pi desktop, and type:
+
+```bash
+sudo get.pimoroni.com/explorerhat | bash
+```
+
+All the pre-requisites, libraries and examples you'll need to get started will be installed for you.
+
+Once it's finished, you should find the libraries in `/home/pi/Pimoroni/explorerhat`
+
+### The Hard Way
+
+#### Pre-requisites
 
 Explorer HAT and Explorer HAT Pro both require i2c, the easiest way to enable it is with our simple script:
 
@@ -22,7 +38,7 @@ And you'll need "pip" if you don't already have it:
 sudo apt-get install python-pip
 ```
 
-## Installing the Library
+#### Installing the Library
 
 You should now be able to install Explorer HAT with Pip.
 
