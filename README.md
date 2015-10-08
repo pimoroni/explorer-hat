@@ -6,7 +6,11 @@ This library is based on the Pibrella framework, you might find much of it famil
 
 ### The Easy Way
 
-Just run out installer, fire up Terminal which you'll find in Menu -> Accessories -> Terminal on your Raspberry Pi desktop, and type:
+Just run our installer. To do this fire up Terminal which you'll find in Menu -> Accessories -> Terminal on your Raspberry Pi desktop like so:
+
+![Finding the terminal](terminal.jpg)
+
+In the new terminal window type:
 
 ```bash
 sudo get.pimoroni.com/explorerhat | bash
@@ -14,7 +18,12 @@ sudo get.pimoroni.com/explorerhat | bash
 
 All the pre-requisites, libraries and examples you'll need to get started will be installed for you.
 
-Once it's finished, you should find the libraries in `/home/pi/Pimoroni/explorerhat`
+Once it's finished, you should find the libraries in `/home/pi/Pimoroni/explorerhat`, for example (and still in the terminal) type:
+
+```bash
+cd ~/Pimoroni/explorerhat
+sudo ./test.py
+```
 
 ### The Hard Way
 
