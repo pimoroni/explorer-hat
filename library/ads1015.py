@@ -3,8 +3,9 @@ from smbus import SMBus
 
 adc_available = True
 
+
 def i2c_bus_id():
-    revision = ([l[12:-1] for l in open('/proc/cpuinfo', 'r').readlines() if l[:8] == "Revision"]+['0000'])[0]
+    revision = ([l[12:-1] for l in open('/proc/cpuinfo', 'r').readlines() if l[:8] == "Revision"] + ['0000'])[0]
     return 1 if int(revision, 16) >= 4 else 0
 
 
@@ -25,6 +26,7 @@ PGA_1_024V = 1024
 PGA_0_512V = 512
 PGA_0_256V = 256
 
+
 def read_se_adc(channel=1, programmable_gain=PGA_6_144V, samples_per_second=1600):
     # sane defaults
     config = 0x0003 | 0x0100
@@ -44,7 +46,8 @@ def read_se_adc(channel=1, programmable_gain=PGA_6_144V, samples_per_second=1600
 
     data = i2c.read_i2c_block_data(address, REG_CONV)
 
-    return (((data[0] << 8) | data[1]) >> 4 ) * programmable_gain / 2048.0 / 1000.0
+    return (((data[0] << 8) | data[1]) >> 4) * programmable_gain / 2048.0 / 1000.0
+
 
 try:
     read_se_adc()
