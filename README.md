@@ -2,7 +2,32 @@
 
 This library is based on the Pibrella framework, you might find much of it familiar. It's got added motors, capacitive touch and analog input though!
 
-## Pre-requisites
+## Installing The Library
+
+### The Easy Way
+
+Just run our installer. To do this fire up Terminal which you'll find in Menu -> Accessories -> Terminal on your Raspberry Pi desktop like so:
+
+![Finding the terminal](terminal.jpg)
+
+In the new terminal window type:
+
+```bash
+sudo get.pimoroni.com/explorerhat | bash
+```
+
+All the pre-requisites, libraries and examples you'll need to get started will be installed for you.
+
+Once it's finished, you should find the libraries in `/home/pi/Pimoroni/explorerhat`, for example (and still in the terminal) type:
+
+```bash
+cd ~/Pimoroni/explorerhat
+sudo ./test.py
+```
+
+### The Hard Way
+
+#### Pre-requisites
 
 Explorer HAT and Explorer HAT Pro both require i2c, the easiest way to enable it is with our simple script:
 
@@ -22,17 +47,39 @@ And you'll need "pip" if you don't already have it:
 sudo apt-get install python-pip
 ```
 
-## Installing the Library
+#### Installing the Library
 
-You should now be able to install Explorer HAT with Pip:
+You should now be able to install Explorer HAT with Pip.
+
+**Python 3:**
 
 ```bash
+sudo apt-get install python3-pip
+sudo pip-3.2 install explorerhat
+```
+
+**Python 2:**
+
+```bash
+sudo apt-get install python-pip
 sudo pip install explorerhat
 ```
 
 ## Getting Started
 
-To get started, start up a Python interactive shell:
+To get started, start up a Python 3 interactive shell:
+
+```bash
+sudo python3
+```
+
+or
+
+```bash
+sudo idle3 &
+```
+
+or Python 2:
 
 ```bash
 sudo python
@@ -41,7 +88,7 @@ sudo python
 or
 
 ```bash
-sudo idle
+sudo idle &
 ```
 
 ...and poke Explorer HAT's innards to see what it's got to offer:
@@ -87,5 +134,5 @@ The 4 outputs on Explorer HAT can sink 5V, but not source. This means you need t
 
 # Documentation
 
-* [Explorer HAT Function Reference](/REFERENCE.md)
-* [Explorer HAT Pinout](/PINS.md)
+* [Explorer HAT Function Reference](/documentation/Function-reference.md)
+* [Explorer HAT Pinout](/documentation/GPIO-pins.md)

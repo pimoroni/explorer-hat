@@ -11,8 +11,10 @@ This simple Python library creates a PureData file on the fly which generates mo
 """
 
 
-class PDTone:
+class PDTone():
     def __init__(self, pd_file=None):
+        if not os.path.isfile("/usr/bin/pd"):
+            exit("This library requires PD; sudo apt-get install pd")
         self.port = 3000
         self.tempfile = None
         if pd_file is None:
@@ -36,7 +38,7 @@ class PDTone:
                                         stderr=open(os.devnull, 'w'))
         pid = subprocess.check_output(['/bin/pidof', 'pd'], )
         time.sleep(0.5)
-        self.pid = int(pid.split(' ')[0])
+        self.pid = int(pid.decode('UTF-8').split(' ')[0])
         print("Started PD with PID: " + str(pid))
 
     def connect(self):
@@ -63,7 +65,7 @@ class PDTone:
             os.remove(self.pd_file)
 
     def send(self, cmd):
-        self.socket.send(cmd + ';')
+        self.socket.send(str(cmd + ';').encode())
 
     def power_on(self):
         self.send('power 1')

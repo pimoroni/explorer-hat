@@ -20,8 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 classifiers = ['Development Status :: 5 - Production/Stable',
                'Operating System :: POSIX :: Linux',
@@ -34,7 +36,7 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: System :: Hardware']
 
 setup(name		= 'ExplorerHAT',
-	version		= '0.1.1',
+	version		= '0.2.0',
 	author		= 'Philip Howard',
 	author_email	= 'phil@pimoroni.com',
 	description	= 'A module to control the Explorer HAT Raspberry Pi Addon Board',
@@ -43,6 +45,6 @@ setup(name		= 'ExplorerHAT',
 	keywords	= 'Raspberry Pi Explorer HAT',
 	url		= 'http://shop.pimoroni.com',
 	classifiers     = classifiers,
-	py_modules	= ['explorerhat','pins','captouch','analog'],
-	install_requires= ['rpi.gpio >= 0.5.10']
+	py_modules	= ['explorerhat','pins','ads1015'],
+	install_requires= ['rpi.gpio >= 0.5.10','cap1xxx']
 )
