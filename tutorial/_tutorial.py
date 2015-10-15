@@ -100,7 +100,7 @@ def start(messages):
         if callable(msg):
             msg()
         else:
-            for key, value in placeholders:
+            for key, value in placeholders.items():
                 msg = msg.replace(key, colorama.Fore.BLUE + value + colorama.Fore.RESET)
 
             msg = msg.replace('    ', colorama.Fore.GREEN + '    ')
