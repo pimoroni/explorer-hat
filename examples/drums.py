@@ -42,6 +42,8 @@ def handle(ch, evt):
     if evt == 'press':
         explorerhat.light[led].fade(0, 100, 0.1)
         sounds[ch - 1].play(loops=0)
+        name = samples[ch - 1].replace('sounds/','').replace('.wav','')
+        print("{}!".format(name.capitalize()))
     else:
         explorerhat.light[led].off()
 
