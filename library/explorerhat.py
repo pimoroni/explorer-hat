@@ -167,6 +167,9 @@ class Pin(object):
     def __exit__(self, type, value, traceback):
         pass
 
+    def __del__(self):
+        pass
+
     is_high = is_on
     is_low = is_off
     get = read
