@@ -21,6 +21,9 @@ import RPi.GPIO as GPIO
 from pins import ObjectCollection, AsyncWorker, StoppableThread
 
 explorer_pro = False
+explorer_phat = False
+has_captouch = False
+has_analog = False
 
 # Assume A+, B+ and no funny business
 
@@ -662,6 +665,8 @@ def stop():
 def is_explorer_pro():
     return explorer_pro
 
+def is_explorer_phat():
+    return explorer_phat
 
 def explorerhat_exit():
     print("\nExplorer HAT exiting cleanly, please wait...")
@@ -683,17 +688,32 @@ def explorerhat_exit():
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-_cap1208 = Cap1208()
-if not _cap1208._get_product_id() == CAP_PRODUCT_ID:
-    exit("Explorer HAT not found...\nHave you enabled i2c?")
+try:
+    _cap1208 = Cap1208()
+    has_captouch = True
+except IOError:
+    has_captouch = False
 
 if ads1015.adc_available:
+    has_analog = True
+else:
+    has_analog = False
+
+
+if has_captouch and has_analog:
     print("Explorer HAT Pro detected...")
     explorer_pro = True
-else:
+
+elif has_captouch and not has_analog:
     print("Explorer HAT Basic detected...")
-    print("If this is incorrect, please check your i2c settings!")
-    explorer_pro = False
+
+elif has_analog and not has_captouch:
+    print("Explorer pHAT detected...")
+    explorer_phat = True
+
+else:
+    print("Warning, could not find Analog or Touch...")
+    print("Please check your i2c settings!")
 
 atexit.register(explorerhat_exit)
 
@@ -720,24 +740,28 @@ try:
     input._add(three=Input(IN3))
     input._add(four=Input(IN4))
 
+
     touch = ObjectCollection()
-    touch._add(one=CapTouchInput(4, 1))
-    touch._add(two=CapTouchInput(5, 2))
-    touch._add(three=CapTouchInput(6, 3))
-    touch._add(four=CapTouchInput(7, 4))
-    touch._add(five=CapTouchInput(0, 5))
-    touch._add(six=CapTouchInput(1, 6))
-    touch._add(seven=CapTouchInput(2, 7))
-    touch._add(eight=CapTouchInput(3, 8))
+    if has_captouch:
+        touch._add(one=CapTouchInput(4, 1))
+        touch._add(two=CapTouchInput(5, 2))
+        touch._add(three=CapTouchInput(6, 3))
+        touch._add(four=CapTouchInput(7, 4))
+        touch._add(five=CapTouchInput(0, 5))
+        touch._add(six=CapTouchInput(1, 6))
+        touch._add(seven=CapTouchInput(2, 7))
+        touch._add(eight=CapTouchInput(3, 8))
 
 # Check for the existence of the ADC
 # to determine if we're running Pro
 
     analog = ObjectCollection()
     motor = ObjectCollection()
-    if is_explorer_pro():
+    if is_explorer_pro() or is_explorer_phat():
         motor._add(one=Motor(M1F, M1B))
         motor._add(two=Motor(M2F, M2B))
+
+    if has_analog:
         analog._add(one=AnalogInput(3))
         analog._add(two=AnalogInput(2))
         analog._add(three=AnalogInput(1))
