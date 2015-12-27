@@ -1,4 +1,4 @@
-![Explorer HAT](explorer-hat.png)
+![Explorer HAT/pHAT](explorer-hat.png)
 
 This library is based on the Pibrella framework, you might find much of it familiar. It's got added motors, capacitive touch and analog input though!
 
@@ -29,7 +29,7 @@ sudo ./test.py
 
 #### Pre-requisites
 
-Explorer HAT and Explorer HAT Pro both require i2c, the easiest way to enable it is with our simple script:
+Explorer HAT, Explorer HAT Pro and Explorer pHAT all require i2c, the easiest way to enable it is with our simple script:
 
 ```bash
 curl get.pimoroni.com/i2c | bash
@@ -49,7 +49,7 @@ sudo apt-get install python-pip
 
 #### Installing the Library
 
-You should now be able to install Explorer HAT with Pip.
+You should now be able to install Explorer HAT/pHAT with Pip.
 
 **Python 3:**
 
@@ -101,14 +101,6 @@ explorerhat.touch
 explorerhat.light
 ```
 
-On Explorer HAT Pro, you will also find:
-
-```python
-import explorerhat
-explorerhat.analog
-explorerhat.motor
-```
-
 To turn on one of the lights, address it by the name you found above:
 
 ```python
@@ -125,11 +117,29 @@ def ohai(channel, event):
 explorerhat.touch.one.pressed(ohai)
 ```
 
+On Explorer HAT Pro, you will also find:
+
+```python
+import explorerhat
+explorerhat.analog
+explorerhat.motor
+```
+
+The Explorer pHAT has most of those features except the light and touch classes, so:
+
+```python
+import explorerhat
+explorerhat.input
+explorerhat.output
+explorerhat.analog
+explorerhat.motor
+```
+
 ## Notes
 
-Explorer HAT uses an output driver chip called the ULN2003A, which contains a set of transistor pairs called a Darlington Array. It transforms the small logic signal of the Pi into something capable of driving much bigger loads, such as motors, steppers, lights and more. 
+Explorer HAT/pHAT uses an output driver chip called the ULN2003A, which contains a set of transistor pairs called a Darlington Array. It transforms the small logic signal of the Pi into something capable of driving much bigger loads, such as motors, steppers, lights and more. 
 
-The 4 outputs on Explorer HAT can sink 5V, but not source. This means you need to connect your load to one of the 5V pins, and then to the output. When you turn the output on it will connect your circuit to ground, allowing current to flow and your load to turn on. This is the opposite of using a bare Pi GPIO pin, where you might connect to the pin and then to ground; keep this in mind!
+The 4 outputs on Explorer can sink 5V, but not source. This means you need to connect your load to one of the 5V pins, and then to the output. When you turn the output on it will connect your circuit to ground, allowing current to flow and your load to turn on. This is the opposite of using a bare Pi GPIO pin, where you might connect to the pin and then to ground; keep this in mind!
 
 
 # Documentation

@@ -36,7 +36,7 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: System :: Hardware']
 
 setup(name		= 'ExplorerHAT',
-	version		= '0.2.0',
+	version		= '0.3.0',
 	author		= 'Philip Howard',
 	author_email	= 'phil@pimoroni.com',
 	description	= 'A module to control the Explorer HAT Raspberry Pi Addon Board',
