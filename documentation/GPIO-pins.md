@@ -67,7 +67,7 @@ Function | Motor | GPIO pin
 
 ### 3.3v breakout ( Explorer HAT Pro only )
 
-Explorer HAT Pro breaks out a number of your Raspberry Pi IO pisn to give you convinient access to SPI, PWM, SPI and Serial/UART. None of these pins are 5V tolerant, so be careful what you connect!
+Explorer HAT Pro breaks out a number of your Raspberry Pi IO pins to give you convenient access to SPI, PWM, SPI and Serial/UART. None of these pins are 5V tolerant, so be careful what you connect!
 
 Function | GPIO pin
 ---------|----------
