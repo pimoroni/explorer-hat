@@ -1,5 +1,3 @@
-I would like to contribute the code below if you think that it is appropriate.
-
 #!/usr/bin/env python
 
 # File: sensor.py
@@ -60,7 +58,7 @@ while True:
     V2  = explorerhat.analog.one.read()
     V1 = V - V2
     R2 = V2*(R1/V1)
-    print '  {0:5.2f} volts   {1:5.2f} ohms'.format(round(V2,2), round(R2,2))
+    print('  {0:5.2f} volts   {1:5.2f} ohms'.format(round(V2,2), round(R2,2)))
     if V2 > threshold:
         explorerhat.output.one.off()
         explorerhat.output.two.on()
