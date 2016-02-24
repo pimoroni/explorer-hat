@@ -35,16 +35,16 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: Software Development',
                'Topic :: System :: Hardware']
 
-setup(name		= 'ExplorerHAT',
-	version		= '0.3.0',
-	author		= 'Philip Howard',
-	author_email	= 'phil@pimoroni.com',
-	description	= 'A module to control the Explorer HAT Raspberry Pi Addon Board',
-	long_description= open('README.md').read() + open('CHANGELOG.txt').read(),
-	license		= 'MIT',
-	keywords	= 'Raspberry Pi Explorer HAT',
-	url		= 'http://shop.pimoroni.com',
-	classifiers     = classifiers,
-	py_modules	= ['explorerhat','pins','ads1015'],
-	install_requires= ['rpi.gpio >= 0.5.10','cap1xxx']
+setup(name      = 'ExplorerHAT',
+    version     = '0.3.0',
+    author      = 'Philip Howard',
+    author_email= 'phil@pimoroni.com',
+    description = 'A module to control the Explorer HAT Raspberry Pi Addon Board',
+    long_description= open('README.md').read() + open('CHANGELOG.txt').read(),
+    license     = 'MIT',
+    keywords    = 'Raspberry Pi Explorer HAT',
+    url         = 'http://shop.pimoroni.com',
+    classifiers = classifiers,
+    py_modules  = ['explorerhat','pins','ads1015'],
+    install_requires= ['cap1xxx']
 )
