@@ -13,7 +13,7 @@ Just run our installer. To do this fire up Terminal which you'll find in Menu ->
 In the new terminal window type:
 
 ```bash
-curl get.pimoroni.com/explorerhat | bash
+curl -sS get.pimoroni.com/explorerhat | bash
 ```
 
 All the pre-requisites, libraries and examples you'll need to get started will be installed for you.
