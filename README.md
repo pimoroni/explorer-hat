@@ -1,5 +1,9 @@
 ![Explorer HAT/pHAT](explorer-hat.png)
 
+The Explorer HAT and Explorer HAT Pro have a heap of useful input and output options that will take your Raspberry Pi projects to the next level. Great for driving motors, using analog sensors, interfacing with 5V systems, and touch (even fruit based!) interfaces.
+
+Learn more: https://shop.pimoroni.com/products/explorer-hat
+
 This library is based on the Pibrella framework, you might find much of it familiar. It's got added motors, capacitive touch and analog input though!
 
 ## Installing The Library
