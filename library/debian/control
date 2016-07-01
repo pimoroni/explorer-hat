@@ -3,12 +3,12 @@ Maintainer: Phil Howard <phil@pimoroni.com>
 Homepage: https://github.com/pimoroni/explorer-hat
 Section: python
 Priority: optional
-Build-Depends: debhelper (>= 9.0.0), dh-autoreconf, python-all (>= 2.6), python-setuptools, python3-all (>= 3.2), python3-setuptools
+Build-Depends: debhelper (>= 9.0.0), python-all (>= 2.7), python-setuptools, python3-all (>= 3.2), python3-setuptools
 Standards-Version: 3.9.6
-X-Python-Version: >= 2.6
+X-Python-Version: >= 2.7
 X-Python3-Version: >= 3.2
 
-Package: python-pim-explorer
+Package: python-pim-explorerhat
 Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python:Depends}, python-rpi.gpio, python-smbus
@@ -20,7 +20,7 @@ Description: python library designed to control the Explorer HAT and pHAT.
  .
  This is the Python 2 version of the package.
 
-Package: python3-pim-explorer
+Package: python3-pim-explorerhat
 Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python3:Depends}, python3-rpi.gpio, python3-smbus
