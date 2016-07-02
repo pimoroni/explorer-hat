@@ -5,10 +5,8 @@ Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9.0.0), dh-python, python-all (>= 2.7), python-setuptools, python3-all (>= 3.2), python3-setuptools
 Standards-Version: 3.9.6
-X-Python-Version: >= 2.7
-X-Python3-Version: >= 3.2
 
-Package: python-pim-explorerhat
+Package: python-explorerhat
 Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python:Depends}, python-rpi.gpio, python-smbus
@@ -20,7 +18,7 @@ Description: python library designed to control the Explorer HAT and pHAT.
  .
  This is the Python 2 version of the package.
 
-Package: python3-pim-explorerhat
+Package: python3-explorerhat
 Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python3:Depends}, python3-rpi.gpio, python3-smbus
