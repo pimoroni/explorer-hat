@@ -1,3 +1,9 @@
+explorerhat (0.3.1) UNRELEASED; urgency=low
+
+  * Initial commit to Raspbian apt repository
+
+ -- Rogue Marechal <hal@pimoroni.com>  Fri, 01 Jul 2016 00:00:00 +0000
+
 explorerhat (0.3.0) UNRELEASED; urgency=low
 
   * Added support for Explorer pHAT
@@ -17,4 +23,3 @@ explorerhat (0.1.1) UNRELEASED; urgency=low
   * Added analog changed function
 
  -- Phil Howard <phil@pimoroni.com>  Wed, 25 Mar 2015 00:00:00 +0000
- 
