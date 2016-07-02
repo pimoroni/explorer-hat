@@ -1,18 +1,18 @@
-explorerhat (0.3.0-1) UNRELEASED; urgency=low
+explorerhat (0.3.0) UNRELEASED; urgency=low
 
   * Added support for Explorer pHAT
   * Better device detection
 
  -- Phil Howard <phil@pimoroni.com>  Tue, 01 Dec 2015 00:00:00 +0000
 
-explorerhat (0.2.0-1) UNRELEASED; urgency=low
+explorerhat (0.2.0) UNRELEASED; urgency=low
 
   * Updated to depend upon common cap1xxx library
   * Hopefully supports Python 3
 
  -- Phil Howard <phil@pimoroni.com>  Mon, 05 Jun 2015 00:00:00 +0000
 
-explorerhat (0.1.1-1) UNRELEASED; urgency=low
+explorerhat (0.1.1) UNRELEASED; urgency=low
 
   * Added analog changed function
 
