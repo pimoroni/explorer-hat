@@ -1,0 +1,3 @@
+extend-diff-ignore = "(^|/)(Makefile|setup\.cfg)$"
+extend-diff-ignore = "(^|/)(build/.*)$"
+extend-diff-ignore = "^[^/]+\.egg-info/"
