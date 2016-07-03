@@ -8,5 +8,8 @@ export DH_OPTIONS
 	dh $@ --with python2,python3 --buildsystem=python_distutils
 
 override_dh_auto_install:
-	python setup.py install --root debian/python-explorerhat --install-layout=deb
-	python3 setup.py install --root debian/python3-explorerhat --install-layout=deb
+	python setup.py install --root debian/python-cap1xxx --install-layout=deb
+	python3 setup.py install --root debian/python3-cap1xxx --install-layout=deb
+
+override_dh_builddeb:
+	--destdir=../packaging
