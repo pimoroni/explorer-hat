@@ -18,7 +18,7 @@ for file in ${pkgfiles[@]}; do
 done
 
 if [ $cleanup == "yes" ]; then
-    dh clean
+    debuild clean
     rm -R ./build
 fi
 
