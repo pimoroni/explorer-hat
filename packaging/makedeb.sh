@@ -2,6 +2,8 @@
 
 gettools="yes"
 cleanup="yes"
+pkgfiles=( "build" "changes" "deb" "dsc" "tar.xz" )
+
 
 if [ $gettools == "yes" ]; then
     sudo apt-get update && sudo apt-get install build-essential dh-make dh-python debhelper devscripts
@@ -11,11 +13,9 @@ fi
 cd ../library
 debuild -Ipackage
 
-mv ../*.build ../packaging
-mv ../*.changes ../packaging
-mv ../*.tar.xz ../packaging
-mv ../*.deb ../packaging
-mv ../*.dsc ../packaging
+for file in ${pkgfiles[@]}; do
+    mv ../*.$file ../packaging
+done
 
 if [ $cleanup == "yes" ]; then
     dh clean

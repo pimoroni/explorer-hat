@@ -10,6 +10,3 @@ export DH_OPTIONS
 override_dh_auto_install:
 	python setup.py install --root debian/python-cap1xxx --install-layout=deb
 	python3 setup.py install --root debian/python3-cap1xxx --install-layout=deb
-
-override_dh_builddeb:
-	--destdir=../packaging
