@@ -1,0 +1,33 @@
+Source: explorerhat
+Maintainer: Rogue Marechal <hal@pimoroni.com>
+Homepage: https://github.com/pimoroni/explorer-hat
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 9.0.0), dh-python, python-all (>= 2.7), python-setuptools, python3-all (>= 3.4), python3-setuptools
+Standards-Version: 3.9.6
+X-Python-Version: >= 2.7
+X-Python3-Version: >= 3.4
+
+Package: python-explorerhat
+Architecture: all
+Section: python
+Depends: ${misc:Depends}, ${python:Depends}, python-cap1xxx
+Suggests: i2c-tools, python-pygame
+Description: python library designed to control the Explorer HAT and pHAT.
+ The Explorer HAT and pHAT are great for driving motors, using analog
+ sensors, interfacing with 5V systems, and touch (HAT only) interfaces.
+ They have a heap of useful input and output options. 
+ .
+ This is the Python 2 version of the package.
+
+Package: python3-explorerhat
+Architecture: all
+Section: python
+Depends: ${misc:Depends}, ${python3:Depends}, python3-cap1xxx
+Suggests: i2c-tools, python3-pygame
+Description: python library designed to control the Explorer HAT and pHAT.
+ The Explorer HAT and pHAT are great for driving motors, using analog
+ sensors, interfacing with 5V systems, and touch (HAT only) interfaces.
+ They have a heap of useful input and output options. 
+ .
+ This is the Python 3 version of the package.
