@@ -1,4 +1,9 @@
-##2.0.0
+##0.3.0
+
+* Added support for Explorer pHAT
+* Better device detection
+
+##0.2.0
 
 * Updated to depend upon common cap1xxx library
 * Hopefully supports Python 3
