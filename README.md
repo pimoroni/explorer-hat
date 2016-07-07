@@ -4,10 +4,6 @@ The Explorer HAT and Explorer HAT Pro have a heap of useful input and output opt
 
 Learn more: https://shop.pimoroni.com/products/explorer-hat
 
-Explorer pHAT Pinout: http://pinout.xyz/pinout/explorer_phat
-Explorer HAT Pinout: http://pinout.xyz/pinout/explorer_hat
-Explorer HAT Pro Pinout: http://pinout.xyz/pinout/explorer_hat_pro
-
 ## Installing The Library
 
 ### The Easy Way
@@ -152,3 +148,9 @@ The 4 outputs on Explorer can sink 5V, but not source. This means you need to co
 
 * [Explorer HAT Function Reference](/documentation/Function-reference.md)
 * [Explorer HAT Pinout](/documentation/GPIO-pins.md)
+
+### GPIO Pinouts
+
+* Explorer pHAT: http://pinout.xyz/pinout/explorer_phat
+* Explorer HAT: http://pinout.xyz/pinout/explorer_hat
+* Explorer HAT Pro: http://pinout.xyz/pinout/explorer_hat_pro
