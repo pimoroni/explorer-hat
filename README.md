@@ -4,7 +4,9 @@ The Explorer HAT and Explorer HAT Pro have a heap of useful input and output opt
 
 Learn more: https://shop.pimoroni.com/products/explorer-hat
 
-This library is based on the Pibrella framework, you might find much of it familiar. It's got added motors, capacitive touch and analog input though!
+Explorer pHAT Pinout: http://pinout.xyz/pinout/explorer_phat
+Explorer HAT Pinout: http://pinout.xyz/pinout/explorer_hat
+Explorer HAT Pro Pinout: http://pinout.xyz/pinout/explorer_hat_pro
 
 ## Installing The Library
 
