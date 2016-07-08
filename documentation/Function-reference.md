@@ -5,7 +5,7 @@ handle: explorer-hat-python-function-reference
 type: tutorial
 summary: A comprehensive reference for Explorer HAT's Python library
 author: Phil Howard
-products: [explorer-hat, explorer-hat-pro]
+products: [explorer-hat, explorer-hat-pro, explorer-phat]
 tags: [Explorer HAT, Raspberry Pi, Python, Programming]
 images: [images/tba.png]
 difficulty: Beginner
@@ -14,9 +14,7 @@ difficulty: Beginner
 
 This reference details all of the available functions on Explorer HAT touch inputs, lights, inputs, outputs, analog inputs and motor driver.
 
-The Analog inputs and Motor driver are only available on Explorer HAT Pro.
-
-### Touch
+### Touch ( Explorer HAT only )
 
 Explorer HAT includes 8 touch pads which act just like buttons. We've fine tuned these to be really responsive, and you can easily use them for entering PIN codes, controlling a project or playing the drums.
 
@@ -71,7 +69,7 @@ Calls "handler_function" repeatedly while the pad is held down ( default once ev
 
 ### Input
 
-Explorer HAT includes 4 buffered, 5v tolerant inputs. These act just like the GPIO pins on your Pi and don't require any special treatment. When you send a HIGH signal into them, you'll read a HIGH pin state ( 1 ) in Python.
+Explorer HAT/pHAT includes 4 buffered, 5v tolerant inputs. These act just like the GPIO pins on your Pi and don't require any special treatment. When you send a HIGH signal into them, you'll read a HIGH pin state ( 1 ) in Python.
 
 * `read()` - Read the state of the input
 * `has_changed()` - Returns true if the input has changed since the last read
@@ -99,6 +97,8 @@ Input one changed to 0
 
 ### Output
 
+When you turn Explorer HAT/pHAT outputs on ( logic HIGH ) it will sink current to ground. Be mindful of this when connecting to the output driver- you'll need to connect your device to a voltage supply, and then to the output pin.
+
 * `on()` - Turns the output on
 * `off()` - Turns the output off
 * `toggle()` - Changes the output to its opposite state
@@ -108,7 +108,7 @@ Input one changed to 0
 * `fade( from, to, time )` - Fade from 0-100 to 0-100 brightness over a number of seconds specified by "time"
 * `stop()` - Stops any running blink, fade or pulse action
 
-### Light
+### Light ( Explorer HAT only )
 
 There are four lights on Explorer HAT, Yellow, Blue, Red and Green. These are named as such in Python:
 
@@ -120,12 +120,12 @@ explorerhat.light.green
 
 Each light includes all of the functionality of an output. See above.
 
-### Analog ( Pro Only )
+### Analog ( Explorer HAT Pro and pHAT only )
 
 * `read()` - Returns the value of the analog input in millivolts.
 * `changed( handler_function, sensitivity )` - Calls "handler_function" when a change greater than the threshold millivolts occurs
 
-### Motor ( Pro Only )
+### Motor ( Explorer HAT Pro and pHAT only )
 
 * `invert()` - Reverses the direction of forwards for this motor
 * `forwards( speed )` - Turns the motor "forwards" at speed ( default 100% )

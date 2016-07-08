@@ -11,14 +11,14 @@ if [ $gettools == "yes" ]; then
 fi
 
 cd ../library
-debuild -Ipackage
+debuild
 
 for file in ${pkgfiles[@]}; do
     mv ../*.$file ../packaging
 done
 
 if [ $cleanup == "yes" ]; then
-    dh clean
+    debuild clean
     rm -R ./build
 fi
 
