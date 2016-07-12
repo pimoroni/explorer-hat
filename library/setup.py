@@ -36,7 +36,7 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: System :: Hardware']
 
 setup(name      = 'ExplorerHAT',
-    version     = '0.3.1',
+    version     = '0.4.1',
     author      = 'Philip Howard',
     author_email= 'phil@pimoroni.com',
     description = 'A module to control the Explorer HAT Raspberry Pi Addon Board',
@@ -45,6 +45,6 @@ setup(name      = 'ExplorerHAT',
     keywords    = 'Raspberry Pi Explorer HAT',
     url         = 'http://shop.pimoroni.com',
     classifiers = classifiers,
-    py_modules  = ['explorerhat','pins','ads1015'],
+    packages    = ['explorerhat'],
     install_requires= ['cap1xxx']
 )

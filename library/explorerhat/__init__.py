@@ -16,9 +16,9 @@ import time
 import signal
 import atexit
 from cap1xxx import Cap1208
-import ads1015
+from .ads1015 import read_se_adc, adc_available 
 import RPi.GPIO as GPIO
-from pins import ObjectCollection, AsyncWorker, StoppableThread
+from .pins import ObjectCollection, AsyncWorker, StoppableThread
 
 explorer_pro = False
 explorer_phat = False
@@ -541,7 +541,7 @@ class AnalogInput(object):
         self._handler = None
 
     def read(self):
-        return ads1015.read_se_adc(self.channel)
+        return read_se_adc(self.channel)
 
     def sensitivity(self, sensitivity):
         self._sensitivity = sensitivity
@@ -694,7 +694,7 @@ try:
 except IOError:
     has_captouch = False
 
-if ads1015.adc_available:
+if adc_available:
     has_analog = True
 else:
     has_analog = False
