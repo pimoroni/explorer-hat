@@ -16,9 +16,9 @@ import time
 import signal
 import atexit
 from cap1xxx import Cap1208
-import ads1015
+import .ads1015
 import RPi.GPIO as GPIO
-from pins import ObjectCollection, AsyncWorker, StoppableThread
+from .pins import ObjectCollection, AsyncWorker, StoppableThread
 
 explorer_pro = False
 explorer_phat = False
