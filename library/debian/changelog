@@ -1,6 +1,7 @@
-explorerhat (0.3.1) UNRELEASED; urgency=low
+explorerhat (0.4.1) UNRELEASED; urgency=low
 
   * Initial commit to Raspbian apt repository
+  * Dropped junk files from package
 
  -- Rogue Marechal <hal@pimoroni.com>  Fri, 01 Jul 2016 00:00:00 +0000
 
