@@ -17,8 +17,8 @@ eggs/
 *.orig.*
 .installed.cfg
 .idea
-
+library/debian/
+packaging/*tar.xz
 MANIFEST
-
 pip-log.txt
 pip-delete-this-directory.txt
