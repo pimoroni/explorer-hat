@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """
 Copyright (c) 2014 Pimoroni
 
@@ -35,12 +36,13 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: Software Development',
                'Topic :: System :: Hardware']
 
-setup(name      = 'ExplorerHAT',
+setup(
+    name        = 'ExplorerHAT',
     version     = '0.4.1',
     author      = 'Philip Howard',
     author_email= 'phil@pimoroni.com',
     description = 'A module to control the Explorer HAT Raspberry Pi Addon Board',
-    long_description= open('README.md').read() + open('CHANGELOG.txt').read(),
+    long_description= open('README.txt').read() + open('CHANGELOG.txt').read(),
     license     = 'MIT',
     keywords    = 'Raspberry Pi Explorer HAT',
     url         = 'http://shop.pimoroni.com',
