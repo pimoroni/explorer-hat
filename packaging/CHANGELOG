@@ -1,0 +1,33 @@
+explorerhat (0.4.1) UNRELEASED; urgency=low
+
+  * Dropped junk files from package
+
+ -- Phil Howard <phil@pimoroni.com>  Wed, 13 Jul 2016 00:00:00 +0000
+
+explorerhat (0.4.0) UNRELEASED; urgency=low
+
+  * Restructure to include pins/ads1015 in package
+  * Dropped captouch from manifest
+
+ -- Phil Howard <phil@pimoroni.com>  Tue, 12 Jul 2016 00:00:00 +0000
+ 
+
+explorerhat (0.3.0) UNRELEASED; urgency=low
+
+  * Added support for Explorer pHAT
+  * Better device detection
+
+ -- Phil Howard <phil@pimoroni.com>  Tue, 01 Dec 2015 00:00:00 +0000
+
+explorerhat (0.2.0) UNRELEASED; urgency=low
+
+  * Updated to depend upon common cap1xxx library
+  * Hopefully supports Python 3
+
+ -- Phil Howard <phil@pimoroni.com>  Mon, 05 Jun 2015 00:00:00 +0000
+
+explorerhat (0.1.1) UNRELEASED; urgency=low
+
+  * Added analog changed function
+
+ -- Phil Howard <phil@pimoroni.com>  Wed, 25 Mar 2015 00:00:00 +0000
