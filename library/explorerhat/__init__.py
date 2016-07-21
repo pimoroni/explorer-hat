@@ -691,7 +691,7 @@ GPIO.setwarnings(False)
 try:
     _cap1208 = Cap1208()
     has_captouch = True
-except IOError:
+except Exception:
     has_captouch = False
 
 if adc_available:
