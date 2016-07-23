@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+import explorerhat
+import signal
+
 print("""
 This example shows how you can monitor an analog input by attaching a function to its changed event.
 
@@ -8,9 +12,6 @@ Try connecting up a rotary potentiometer or analog sensor to input one.
 
 Press CTRL+C to exit.
 """)
-
-import explorerhat
-import signal
 
 def handle_analog(pin, value):
     print(pin.name, value)

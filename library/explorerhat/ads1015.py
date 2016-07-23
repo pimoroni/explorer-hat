@@ -1,5 +1,12 @@
+try:
+    from smbus import SMBus
+except ImportError:
+    if sys.version_info[0] < 3:
+        exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
+    elif sys.version_info[0] == 3:
+        exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+
 import time
-from smbus import SMBus
 
 adc_available = True
 

@@ -1,9 +1,4 @@
-import os
-import socket
-import time
-import subprocess
-import atexit
-import tempfile
+import atexit, os, socket, subprocess, tempfile, time
 
 """PureData Tone Library
 
