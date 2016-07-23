@@ -2,23 +2,22 @@
 
 API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
-import sys
-
 try:
     from smbus import SMBus
 except ImportError:
     if sys.version_info[0] < 3:
-        exit("Explorer HAT requires python-smbus\nInstall with: sudo apt-get install python-smbus")
+        exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
     elif sys.version_info[0] == 3:
-        exit("Explorer HAT requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+        exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
 
-import time
-import signal
-import atexit
-from cap1xxx import Cap1208
+try:
+    from cap1xxx import Cap1208
+except ImportError:
+    exit("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
+
 from .ads1015 import read_se_adc, adc_available 
-import RPi.GPIO as GPIO
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
+import atexit, signal, sys, time
 
 explorer_pro = False
 explorer_phat = False
