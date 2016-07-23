@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .pdtone import PDTone
+from pdtone import PDTone
 import explorerhat
 import time, random
 
