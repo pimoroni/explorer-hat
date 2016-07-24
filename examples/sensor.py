@@ -5,8 +5,10 @@
 # Date: Feb 21, 2016
 # Derived from code by Gisky
 
-import explorerhat
 import time
+
+import explorerhat
+
 
 print("""
 

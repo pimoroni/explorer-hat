@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # Contributed by Gisky
 
-import explorerhat
 import time
+
+import explorerhat
+
 
 print("""
 This example shows how you can read the light level from an LDR connected to analog one,

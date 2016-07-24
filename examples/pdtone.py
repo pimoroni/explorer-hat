@@ -1,9 +1,15 @@
-import atexit, os, socket, subprocess, tempfile, time
-
 """PureData Tone Library
 
 This simple Python library creates a PureData file on the fly which generates monophonic tones.
 """
+
+import atexit
+import os
+import socket
+import subprocess
+import tempfile
+import time
+
 
 class PDTone():
     def __init__(self, pd_file=None):

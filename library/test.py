@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import signal
+import time
+
 import explorerhat
-import signal, time
+
 
 while True:
     print("Fading in...")
