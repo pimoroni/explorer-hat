@@ -2,6 +2,11 @@
 
 API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
+import atexit
+import signal
+import sys
+import time
+
 try:
     from smbus import SMBus
 except ImportError:
@@ -17,7 +22,7 @@ except ImportError:
 
 from .ads1015 import read_se_adc, adc_available 
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
-import atexit, signal, sys, time
+
 
 explorer_pro = False
 explorer_phat = False
