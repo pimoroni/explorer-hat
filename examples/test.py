@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import explorerhat
 import time
+
+import explorerhat
+
 
 print("""
 This basic example tests the various functions of Explorer HAT,

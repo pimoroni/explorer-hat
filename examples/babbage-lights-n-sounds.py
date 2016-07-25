@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+import random
+import time
+
 from pdtone import PDTone
 import explorerhat
-import time, random
+
 
 print("""
 This example tries to re-create the classic pattern copying game Simon.

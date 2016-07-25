@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import explorerhat
 import signal
+
+import explorerhat
+
 
 print("""
 This example shows how you can monitor an analog input by attaching a function to its changed event.

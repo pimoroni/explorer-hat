@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
+import signal
+
 try:
     import pygame
 except ImportError:
     exit("This script requires the pygame module\nInstall with: sudo pip install pygame")
 
 import explorerhat
-import signal
+
 
 print("""
 This example turns your Explorer HAT into a drum kit!
