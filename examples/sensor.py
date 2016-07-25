@@ -5,6 +5,11 @@
 # Date: Feb 21, 2016
 # Derived from code by Gisky
 
+import time
+
+import explorerhat
+
+
 print("""
 
 This Python code is for reporting on the 
@@ -44,9 +49,6 @@ In the contrary case the green LED will be on.
 
 Press CTRL+C to exit.
 """)
-
-import explorerhat
-import time
 
 R1 = 4660
 V = 5.125

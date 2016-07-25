@@ -1,20 +1,20 @@
-import os
-import socket
-import time
-import subprocess
-import atexit
-import tempfile
-
 """PureData Tone Library
 
 This simple Python library creates a PureData file on the fly which generates monophonic tones.
 """
 
+import atexit
+import os
+import socket
+import subprocess
+import tempfile
+import time
+
 
 class PDTone():
     def __init__(self, pd_file=None):
         if not os.path.isfile("/usr/bin/pd"):
-            exit("This library requires PD; sudo apt-get install pd")
+            exit("This library requires PD\nInstall with: sudo apt-get install pd")
         self.port = 3000
         self.tempfile = None
         if pd_file is None:

@@ -1,16 +1,18 @@
 #!/usr/bin/env python
+
+import random
+import time
+
+from pdtone import PDTone
+import explorerhat
+
+
 print("""
 This example tries to re-create the classic pattern copying game Simon.
-
 Press the lights in the sequence given, and try not to make any mistakes!
 
 Press CTRL+C to exit.
 """)
-
-import explorerhat
-from pdtone import PDTone
-import time
-import random
 
 # Start and connect to PD
 tone = PDTone()
