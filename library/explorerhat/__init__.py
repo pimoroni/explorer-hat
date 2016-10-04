@@ -4,15 +4,15 @@ API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
 import atexit
 import signal
-import sys
 import time
+from sys import exit, version_info
 
 try:
     from smbus import SMBus
 except ImportError:
-    if sys.version_info[0] < 3:
+    if version_info[0] < 3:
         exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
-    elif sys.version_info[0] == 3:
+    elif version_info[0] == 3:
         exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
 
 try:
