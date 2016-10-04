@@ -16,6 +16,11 @@ except ImportError:
         exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
 
 try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    exit("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
+
+try:
     from cap1xxx import Cap1208
 except ImportError:
     exit("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
@@ -716,8 +721,7 @@ elif has_analog and not has_captouch:
     explorer_phat = True
 
 else:
-    print("Warning, could not find Analog or Touch...")
-    print("Please check your i2c settings!")
+    exit("Warning, could not find Analog or Touch...\nPlease check your i2c settings!")
 
 atexit.register(explorerhat_exit)
 
