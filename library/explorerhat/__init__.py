@@ -4,16 +4,21 @@ API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
 import atexit
 import signal
-import sys
 import time
+from sys import exit, version_info
 
 try:
     from smbus import SMBus
 except ImportError:
-    if sys.version_info[0] < 3:
+    if version_info[0] < 3:
         exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
-    elif sys.version_info[0] == 3:
+    elif version_info[0] == 3:
         exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    exit("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
 
 try:
     from cap1xxx import Cap1208
@@ -716,8 +721,7 @@ elif has_analog and not has_captouch:
     explorer_phat = True
 
 else:
-    print("Warning, could not find Analog or Touch...")
-    print("Please check your i2c settings!")
+    exit("Warning, could not find Analog or Touch...\nPlease check your i2c settings!")
 
 atexit.register(explorerhat_exit)
 
