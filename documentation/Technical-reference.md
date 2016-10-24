@@ -55,7 +55,7 @@ Output 2 | GPIO 12
 Output 3 | GPIO 13
 Output 4 | GPIO 16
 
-### Inputs, via 5V tolerant input buffer
+### Inputs, via SN74LVC125APWR (5V tolerant input buffer)
 
 Explorer HAT/pHAT has four protected inputs. These are just like normal input pins on your Pi, except they can tolerate 5V.
 
