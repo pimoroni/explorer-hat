@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import signal
+from sys import exit
 
 try:
     import pygame
