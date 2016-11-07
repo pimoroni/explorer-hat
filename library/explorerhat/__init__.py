@@ -29,6 +29,8 @@ from .ads1015 import read_se_adc, adc_available
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
 
 
+__version__ = '0.4.1'
+
 explorer_pro = False
 explorer_phat = False
 has_captouch = False
