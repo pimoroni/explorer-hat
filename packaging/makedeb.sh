@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gettools="yes"
+gettools="no"
 setup="yes"
 cleanup="yes"
 pkgfiles=( "build" "changes" "deb" "dsc" "tar.xz" )
