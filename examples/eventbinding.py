@@ -26,7 +26,7 @@ explorerhat.touch.released(toggle_light)
 
 
 def handle_input(pin):
-    print(pin.name)
+    print(pin.name, pin.read())
 
 
 explorerhat.input.changed(handle_input)
