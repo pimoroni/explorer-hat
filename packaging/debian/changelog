@@ -1,6 +1,13 @@
+explorerhat (0.4.2) stable; urgency=low
+
+  * Initial release to Raspbian Apt repository
+
+ -- Phil Howard <phil@pimoroni.com>  Tue, 8 Nov 2016 00:00:00 +0000
+
 explorerhat (0.4.1) UNRELEASED; urgency=low
 
   * Dropped junk files from package
+  * Refactor into package
 
  -- Phil Howard <phil@pimoroni.com>  Wed, 13 Jul 2016 00:00:00 +0000
 
@@ -9,8 +16,7 @@ explorerhat (0.4.0) UNRELEASED; urgency=low
   * Restructure to include pins/ads1015 in package
   * Dropped captouch from manifest
 
- -- Phil Howard <phil@pimoroni.com>  Tue, 12 Jul 2016 00:00:00 +0000
- 
+ -- Phil Howard <phil@pimoroni.com>  Tue, 12 Jul 2016 00:00:00 +0000 
 
 explorerhat (0.3.0) UNRELEASED; urgency=low
 
