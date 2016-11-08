@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+
 """
-Copyright (c) 2014 Pimoroni
+Copyright (c) 2015 Pimoroni
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 try:
     from setuptools import setup
 except ImportError:
@@ -35,12 +37,13 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: Software Development',
                'Topic :: System :: Hardware']
 
-setup(name      = 'ExplorerHAT',
+setup(
+    name        = 'ExplorerHAT',
     version     = '0.4.1',
     author      = 'Philip Howard',
     author_email= 'phil@pimoroni.com',
     description = 'A module to control the Explorer HAT Raspberry Pi Addon Board',
-    long_description= open('README.md').read() + open('CHANGELOG.txt').read(),
+    long_description= open('README.txt').read() + open('CHANGELOG.txt').read(),
     license     = 'MIT',
     keywords    = 'Raspberry Pi Explorer HAT',
     url         = 'http://shop.pimoroni.com',

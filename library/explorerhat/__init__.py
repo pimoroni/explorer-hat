@@ -2,23 +2,34 @@
 
 API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 
-import sys
+import atexit
+import signal
+import time
+from sys import exit, version_info
 
 try:
     from smbus import SMBus
 except ImportError:
-    if sys.version_info[0] < 3:
-        exit("Explorer HAT requires python-smbus\nInstall with: sudo apt-get install python-smbus")
-    elif sys.version_info[0] == 3:
-        exit("Explorer HAT requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+    if version_info[0] < 3:
+        exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
+    elif version_info[0] == 3:
+        exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
 
-import time
-import signal
-import atexit
-from cap1xxx import Cap1208
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    exit("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
+
+try:
+    from cap1xxx import Cap1208
+except ImportError:
+    exit("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
+
 from .ads1015 import read_se_adc, adc_available 
-import RPi.GPIO as GPIO
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
+
+
+__version__ = '0.4.1'
 
 explorer_pro = False
 explorer_phat = False
@@ -712,8 +723,7 @@ elif has_analog and not has_captouch:
     explorer_phat = True
 
 else:
-    print("Warning, could not find Analog or Touch...")
-    print("Please check your i2c settings!")
+    exit("Warning, could not find Analog or Touch...\nPlease check your i2c settings!")
 
 atexit.register(explorerhat_exit)
 

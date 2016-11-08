@@ -1,7 +1,7 @@
-import time
-import sys
-import colorama
 import atexit
+import colorama
+import sys
+import time
 
 try:
     from msvcrt import getch

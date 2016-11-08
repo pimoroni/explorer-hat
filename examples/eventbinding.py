@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+import explorerhat
+
+
 print("""
 This example shows how you can toggle lights when a button is touched.
 
@@ -6,8 +10,6 @@ It'll also print out the values of the digital inputs when they change, try hook
 
 Press CTRL+C to exit.
 """)
-
-import explorerhat
 
 
 def toggle_light(channel, event):

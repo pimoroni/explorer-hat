@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # Contributed by Gisky
+
+import time
+
+import explorerhat
+
+
 print("""
 This example shows how you can read the light level from an LDR connected to analog one,
 and turn on the onboard LEDs to indicate the measured level.
 
 Press CTRL+C to exit.
 """)
-import explorerhat
-import time
 
 while True:
     level = explorerhat.analog.one.read()

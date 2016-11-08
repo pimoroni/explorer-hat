@@ -1,6 +1,5 @@
-include README.md
-include README.txt
 include CHANGELOG.txt
 include LICENSE.txt
-include explorerhat/*.py
+include README.txt
 include setup.py
+include explorerhat/*.py
