@@ -16,7 +16,7 @@ if [ $setup == "yes" ]; then
     cp -R ./debian/ ../library/
 fi
 
-cd ../library && debuild
+cd ../library && debuild -aarmhf
 
 for file in ${pkgfiles[@]}; do
     mv ../*.$file ../packaging

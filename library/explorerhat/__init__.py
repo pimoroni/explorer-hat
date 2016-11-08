@@ -29,7 +29,7 @@ from .ads1015 import read_se_adc, adc_available
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
 
 
-__version__ = '0.4.1'
+__version__ = '0.4.2'
 
 explorer_pro = False
 explorer_phat = False
