@@ -3,7 +3,7 @@
 # script control variables
 
 libname="" # leave this blank for auto-detection
-sibname=( "" ) # name of sibling in packages list
+sibname=() # name of sibling in packages list
 versionwarn="yes" # set to anything but 'yes' to turn off warning
 
 debdir="$(pwd)"
@@ -51,7 +51,7 @@ inform "pypi changelog generated"
 
 if [ -n $(grep version "$libdir/setup.py" &> /dev/null) ]; then
     inform "touched up version in setup.py"
-    sed -i "s/[0-9].[0-9].[0-9]/$version/" "$libdir/setup.py"
+    sed -i "s/'[0-9].[0-9].[0-9]'/'$version'/" "$libdir/setup.py"
 else
     warning "couldn't touch up version in setup, no match found"
 fi
@@ -69,10 +69,10 @@ fi
 
 for sibling in ${sibname[@]}; do
     if grep -e "__version__" "$libdir/$sibling.py" &> /dev/null; then
-        sed -i "s/__version__ = '[0-9].[0-9].[0-9]/__version__ = '$version/" "$libdir/$sibling.py"
+        sed -i "s/__version__ = '[0-9].[0-9].[0-9]'/__version__ = '$version'/" "$libdir/$sibling.py"
         inform "touched up version in $sibling.py"
     elif grep -e "__version__" "$libdir/$sibling/__init__.py" &> /dev/null; then
-        sed -i "s/__version__ = '[0-9].[0-9].[0-9]/__version__ = '$version/" "$libdir/$sibling/__init__.py"
+        sed -i "s/__version__ = '[0-9].[0-9].[0-9]'/__version__ = '$version'/" "$libdir/$sibling/__init__.py"
         inform "touched up version in $sibling/__init__.py"
     elif [ "$versionwarn" == "yes" ]; then
         warning "couldn't touch up __version__ in $sibling, no match found"
