@@ -6,7 +6,7 @@ Learn more: https://shop.pimoroni.com/products/explorer-hat
 
 ## Installing The Library
 
-### The Easy Way
+**Full install ( recommended ):**
 
 Just run our installer. To do this fire up Terminal which you'll find in Menu -> Accessories -> Terminal on your Raspberry Pi desktop like so:
 
@@ -15,57 +15,40 @@ Just run our installer. To do this fire up Terminal which you'll find in Menu ->
 In the new terminal window type:
 
 ```bash
-curl -sS get.pimoroni.com/explorerhat | bash
+curl -sS https://get.pimoroni.com/explorerhat | bash
 ```
 
 All the pre-requisites, libraries and examples you'll need to get started will be installed for you.
 
-Once it's finished, you should find the libraries in `/home/pi/Pimoroni/explorerhat`, for example (and still in the terminal) type:
+If you choose to download examples you'll find them in `/home/pi/Pimoroni/explorerhat/`.
+
+**Library install for Python 3:**
+
+on Raspbian:
 
 ```bash
-cd ~/Pimoroni/explorerhat
-sudo ./test.py
+sudo apt-get install python3-explorerhat
 ```
-
-### The Hard Way
-
-#### Pre-requisites
-
-Explorer HAT, Explorer HAT Pro and Explorer pHAT all require i2c, the easiest way to enable it is with our simple script:
+other environments: 
 
 ```bash
-curl get.pimoroni.com/i2c | bash
+sudo pip3 install explorerhat
 ```
 
-They also require the SMBus Python module, which you'll need to install like so:
+**Library install for Python 2:**
+
+on Raspbian:
 
 ```bash
-sudo apt-get install python-smbus
+sudo apt-get install python-explorerhat
 ```
-
-And you'll need "pip" if you don't already have it:
+other environments: 
 
 ```bash
-sudo apt-get install python-pip
+sudo pip2 install explorerhat
 ```
 
-#### Installing the Library
-
-You should now be able to install Explorer HAT/pHAT with Pip.
-
-**Python 3:**
-
-```bash
-sudo apt-get install python3-pip
-sudo pip-3.2 install explorerhat
-```
-
-**Python 2:**
-
-```bash
-sudo apt-get install python-pip
-sudo pip install explorerhat
-```
+In all cases you will have to enable the i2c bus.
 
 ## Getting Started
 
