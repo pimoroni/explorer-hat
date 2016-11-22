@@ -131,9 +131,11 @@ The 4 outputs on Explorer can sink 5V, but not source. This means you need to co
 
 * [Explorer HAT Function Reference](/documentation/Function-reference.md)
 * [Explorer HAT Pinout](/documentation/GPIO-pins.md)
+* Tutorials - https://learn.pimoroni.com/explorer-hat
+* Get help - http://forums.pimoroni.com/c/support
 
 ### GPIO Pinouts
 
-* Explorer pHAT: http://pinout.xyz/pinout/explorer_phat
-* Explorer HAT: http://pinout.xyz/pinout/explorer_hat
-* Explorer HAT Pro: http://pinout.xyz/pinout/explorer_hat_pro
+* Explorer pHAT: https://pinout.xyz/pinout/explorer_phat
+* Explorer HAT: https://pinout.xyz/pinout/explorer_hat
+* Explorer HAT Pro: https://pinout.xyz/pinout/explorer_hat_pro
