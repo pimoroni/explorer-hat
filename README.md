@@ -1,5 +1,6 @@
 ![Explorer HAT/pHAT](explorer-hat.png)
 https://shop.pimoroni.com/products/explorer-hat
+https://shop.pimoroni.com/products/explorer-phat
 
 The Explorer HAT and Explorer pHAT have a heap of useful input and output options that will take your Raspberry Pi projects to the next level. Great for driving motors, using analog sensors, interfacing with 5V systems, and touch interfaces.
 
@@ -78,7 +79,6 @@ https://learn.pimoroni.com/explorer-phat
 http://docs.pimoroni.com/explorerhat/  
 http://docs.pimoroni.com/explorerphat/  
 * GPIO Pinout  
-https://pinout.xyz/pinout/explorer_hat  
 https://pinout.xyz/pinout/explorer_hat_pro  
 https://pinout.xyz/pinout/explorer_phat  
 * Get help - http://forums.pimoroni.com/c/support
