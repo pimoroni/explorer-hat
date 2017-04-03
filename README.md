@@ -80,7 +80,7 @@ https://github.com/pimoroni/explorer-hat/blob/master/documentation/
 * GPIO Pinout  
 https://pinout.xyz/pinout/explorer_hat_pro  
 https://pinout.xyz/pinout/explorer_phat  
-* Get help
+* Get help  
 http://forums.pimoroni.com/c/support  
 
 ## Important Notes
