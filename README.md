@@ -76,7 +76,7 @@ In all cases you will have to enable the i2c bus.
 https://learn.pimoroni.com/explorer-hat  
 https://learn.pimoroni.com/explorer-phat  
 * Function reference  
-https://github.com/pimoroni/explorer-hat/blob/master/documentation/Function-reference.md
+https://github.com/pimoroni/explorer-hat/blob/master/documentation/
 * GPIO Pinout  
 https://pinout.xyz/pinout/explorer_hat_pro  
 https://pinout.xyz/pinout/explorer_phat  
