@@ -71,16 +71,16 @@ In all cases you will have to enable the i2c bus.
 
 ## Documentation & Support
 
-* Guides and tutorials
-https://learn.pimoroni.com/explorer-hat
-https://learn.pimoroni.com/explorer-phat
-* Function reference
-http://docs.pimoroni.com/explorerhat/
-http://docs.pimoroni.com/explorerphat/
-* GPIO Pinout
-https://pinout.xyz/pinout/explorer_hat
-https://pinout.xyz/pinout/explorer_hat_pro
-https://pinout.xyz/pinout/explorer_phat
+* Guides and tutorials  
+https://learn.pimoroni.com/explorer-hat  
+https://learn.pimoroni.com/explorer-phat  
+* Function reference  
+http://docs.pimoroni.com/explorerhat/  
+http://docs.pimoroni.com/explorerphat/  
+* GPIO Pinout  
+https://pinout.xyz/pinout/explorer_hat  
+https://pinout.xyz/pinout/explorer_hat_pro  
+https://pinout.xyz/pinout/explorer_phat  
 * Get help - http://forums.pimoroni.com/c/support
 
 ## Important Notes
