@@ -13,7 +13,7 @@ Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python:Depends}, python-cap1xxx
 Suggests: i2c-tools, python-pygame
-Description: python library designed to control the Explorer HAT and pHAT.
+Description: Python library designed for the Pimoroni Explorer HAT and pHAT.
  The Explorer HAT and pHAT are great for driving motors, using analog
  sensors, interfacing with 5V systems, and touch (HAT only) interfaces.
  They have a heap of useful input and output options. 
@@ -25,7 +25,7 @@ Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python3:Depends}, python3-cap1xxx
 Suggests: i2c-tools, python3-pygame
-Description: python library designed to control the Explorer HAT and pHAT.
+Description: Python library for the Pimoroni Explorer HAT and pHAT.
  The Explorer HAT and pHAT are great for driving motors, using analog
  sensors, interfacing with 5V systems, and touch (HAT only) interfaces.
  They have a heap of useful input and output options. 
