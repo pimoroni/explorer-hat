@@ -122,8 +122,8 @@ Each light includes all of the functionality of an output. See above.
 
 ### Analog ( Explorer HAT Pro and pHAT only )
 
-* `read()` - Returns the value of the analog input in millivolts.
-* `changed( handler_function, sensitivity )` - Calls "handler_function" when a change greater than the threshold millivolts occurs
+* `read()` - Returns the value of the analog input in volts.
+* `changed( handler_function, sensitivity )` - Calls "handler_function" when a change greater than the threshold (in volts) occurs
 
 ### Motor ( Explorer HAT Pro and pHAT only )
 
