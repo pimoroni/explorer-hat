@@ -91,46 +91,44 @@ def help(topic=None):
     return _help[topic]
 
 
-class Default():
+class Default(object):
+    """Stand-in for ObjectCollection used to ensure one-time setup.
+
+    """
+
     def __init__(self, parent_name=None, **kwargs):
+        object.__init__(self)
         self._parent_name = parent_name
-        self._parent = None
 
     def _ensure_setup(self):
-        setup()
-        self._parent = globals()[self._parent_name]
+        if not _is_setup:
+            setup()
+        self._ensure_setup = lambda: globals()[self._parent_name]
+        return globals()[self._parent_name]
 
     def __iter__(self):
-        self._ensure_setup()
-        return self._parent.__iter__()
+        return self._ensure_setup().__iter__()
 
     def __call__(self):
-        self._ensure_setup()
-        return self._parent.__call__()
+        return self._ensure_setup().__call__()
 
     def __repr__(self):
-        self._ensure_setup()
-        return self._parent.__repr__()
-
-    def __str__(self):
-        self._ensure_setup()
-        return self._parent.__str__()
+        return self._ensure_setup().__repr__()
 
     def __len__(self):
-        self._ensure_setup()
-        return self._parent.__len__()
+        return self._ensure_setup().__len__()
 
     def __dir__(self):
-        self._ensure_setup()
-        return self._parent.__dir__()
+        return self._ensure_setup().__dir__()
 
-    def __getattr__(self, name):
-        self._ensure_setup()
-        return self._parent.__getattr__(name)
+    def __getattribute__(self, name):
+        if name in ("_parent_name", "_ensure_setup"):
+            return object.__getattribute__(self, name)
+
+        return self._ensure_setup().__getattr__(name)
 
     def __getitem__(self, key):
-        self._ensure_setup()
-        return self._parent.__getitem__(key)
+        return self._ensure_setup().__getitem__(key)
 
 
 settings = Default('settings')
