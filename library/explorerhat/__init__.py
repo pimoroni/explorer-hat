@@ -11,19 +11,19 @@ try:
     from smbus import SMBus
 except ImportError:
     if version_info[0] < 3:
-        exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
+        raise ImportError("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
     elif version_info[0] == 3:
-        exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+        raise ImportError("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
 
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    exit("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
+    raise ImportError("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
 
 try:
     from cap1xxx import Cap1208
 except ImportError:
-    exit("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
+    raise ImportError("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
 
 from .ads1015 import read_se_adc, adc_available 
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
@@ -35,6 +35,19 @@ explorer_pro = False
 explorer_phat = False
 has_captouch = False
 has_analog = False
+
+running = False
+workers = {}
+
+settings = None
+light = None
+input = None
+output = None
+analog = None
+touch = None
+motor = None
+
+_quiet = False
 
 # Assume A+, B+ and no funny business
 
@@ -75,6 +88,56 @@ CAP_PRODUCT_ID = 107
 def help(topic=None):
     return _help[topic]
 
+
+class Default():
+    def __init__(self, parent_name=None, **kwargs):
+        self._parent_name = parent_name
+        self._parent = None
+
+    def _ensure_setup(self):
+        ensure_setup()
+        self._parent = globals()[self._parent_name]
+
+    def __iter__(self):
+        self._ensure_setup()
+        return self._parent.__iter__()
+
+    def __call__(self):
+        self._ensure_setup()
+        return self._parent.__call__()
+
+    def __repr__(self):
+        self._ensure_setup()
+        return self._parent.__repr__()
+
+    def __str__(self):
+        self._ensure_setup()
+        return self._parent.__str__()
+
+    def __len__(self):
+        self._ensure_setup()
+        return self._parent.__len__()
+
+    def __dir__(self):
+        self._ensure_setup()
+        return self._parent.__dir__()
+
+    def __getattr__(self, name):
+        self._ensure_setup()
+        return self._parent.__getattr__(name)
+
+    def __getitem__(self, key):
+        self._ensure_setup()
+        return self._parent.__getitem__(key)
+
+
+settings = Default('settings')
+light = Default('light')
+output = Default('output')
+input = Default('input')
+analog = Default('analog')
+touch = Default('touch')
+motor = Default('motor')
 
 class Pulse(StoppableThread):
     """Basic thread wrapper class for delta-timed LED pulsing
@@ -621,9 +684,6 @@ class CapTouchInput(object):
     def held(self, handler):
         self.handlers['held'] = handler
 
-running = False
-workers = {}
-
 
 def async_start(name, function):
     global workers
@@ -680,105 +740,128 @@ def is_explorer_phat():
     return explorer_phat
 
 def explorerhat_exit():
-    print("\nExplorer HAT exiting cleanly, please wait...")
+    if not _quiet:
+        print("\nExplorer HAT exiting cleanly, please wait...")
 
-    print("Stopping flashy things...")
+    if not _quiet:
+        print("Stopping flashy things...")
+
     output.stop()
     input.stop()
     light.stop()
     light.stop_pulse()
 
-    print("Stopping user tasks...")
+    if not _quiet:
+        print("Stopping user tasks...")
+
     async_stop_all()
 
-    print("Cleaning up...")
+    if not _quiet:
+        print("Cleaning up...")
+
     GPIO.cleanup()
 
-    print("Goodbye!")
+    if not _quiet:
+        print("Goodbye!")
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+ensure_setup = lambda: setup()
 
-try:
-    _cap1208 = Cap1208()
-    has_captouch = True
-except IOError:
-    has_captouch = False
+def setup(quiet=False):
+    """Setup Explorer HAT or pHAT"""
 
-if adc_available:
-    has_analog = True
-else:
-    has_analog = False
+    global _cap1208, ensure_setup, settings, light, output, input, touch, analog, motor
+    global _quiet, has_captouch, has_analog, explorer_pro, explorer_phat
 
+    _quiet = quiet
+    ensure_setup = lambda: True
 
-if has_captouch and has_analog:
-    print("Explorer HAT Pro detected...")
-    explorer_pro = True
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
 
-elif has_captouch and not has_analog:
-    print("Explorer HAT Basic detected...")
+    try:
+        _cap1208 = Cap1208()
+        has_captouch = True
+    except IOError:
+        has_captouch = False
 
-elif has_analog and not has_captouch:
-    print("Explorer pHAT detected...")
-    explorer_phat = True
-
-else:
-    exit("Warning, could not find Analog or Touch...\nPlease check your i2c settings!")
-
-atexit.register(explorerhat_exit)
-
-try:
-    settings = ObjectCollection()
-    settings._add(touch=CapTouchSettings())
-
-    light = ObjectCollection()
-    light._add(blue=Light(LED1))
-    light._add(yellow=Light(LED2))
-    light._add(red=Light(LED3))
-    light._add(green=Light(LED4))
-    light._alias(amber='yellow')
-
-    output = ObjectCollection()
-    output._add(one=Output(OUT1))
-    output._add(two=Output(OUT2))
-    output._add(three=Output(OUT3))
-    output._add(four=Output(OUT4))
-
-    input = ObjectCollection()
-    input._add(one=Input(IN1))
-    input._add(two=Input(IN2))
-    input._add(three=Input(IN3))
-    input._add(four=Input(IN4))
+    if adc_available:
+        has_analog = True
+    else:
+        has_analog = False
 
 
-    touch = ObjectCollection()
-    if has_captouch:
-        touch._add(one=CapTouchInput(4, 1))
-        touch._add(two=CapTouchInput(5, 2))
-        touch._add(three=CapTouchInput(6, 3))
-        touch._add(four=CapTouchInput(7, 4))
-        touch._add(five=CapTouchInput(0, 5))
-        touch._add(six=CapTouchInput(1, 6))
-        touch._add(seven=CapTouchInput(2, 7))
-        touch._add(eight=CapTouchInput(3, 8))
+    if has_captouch and has_analog:
+        if not quiet:
+            print("Explorer HAT Pro detected...")
+        explorer_pro = True
 
-# Check for the existence of the ADC
-# to determine if we're running Pro
+    elif has_captouch and not has_analog:
+        if not quiet:
+            print("Explorer HAT Basic detected...")
 
-    analog = ObjectCollection()
-    motor = ObjectCollection()
-    if is_explorer_pro() or is_explorer_phat():
-        motor._add(one=Motor(M1F, M1B))
-        motor._add(two=Motor(M2F, M2B))
+    elif has_analog and not has_captouch:
+        if not quiet:
+            print("Explorer pHAT detected...")
+        explorer_phat = True
 
-    if has_analog:
-        analog._add(one=AnalogInput(3))
-        analog._add(two=AnalogInput(2))
-        analog._add(three=AnalogInput(1))
-        analog._add(four=AnalogInput(0))
-except RuntimeError:
-    print("YOu must be root to use Explorer HAT!")
-    ready = False
+    else:
+        raise RuntimeError("Warning, could not find Analog or Touch...\nPlease check your i2c settings!")
+
+    atexit.register(explorerhat_exit)
+
+    try:
+        settings = ObjectCollection()
+        settings._add(touch=CapTouchSettings())
+
+        light = ObjectCollection()
+        light._add(blue=Light(LED1))
+        light._add(yellow=Light(LED2))
+        light._add(red=Light(LED3))
+        light._add(green=Light(LED4))
+        light._alias(amber='yellow')
+
+        output = ObjectCollection()
+        output._add(one=Output(OUT1))
+        output._add(two=Output(OUT2))
+        output._add(three=Output(OUT3))
+        output._add(four=Output(OUT4))
+
+        input = ObjectCollection()
+        input._add(one=Input(IN1))
+        input._add(two=Input(IN2))
+        input._add(three=Input(IN3))
+        input._add(four=Input(IN4))
+
+
+        touch = ObjectCollection()
+        if has_captouch:
+            touch._add(one=CapTouchInput(4, 1))
+            touch._add(two=CapTouchInput(5, 2))
+            touch._add(three=CapTouchInput(6, 3))
+            touch._add(four=CapTouchInput(7, 4))
+            touch._add(five=CapTouchInput(0, 5))
+            touch._add(six=CapTouchInput(1, 6))
+            touch._add(seven=CapTouchInput(2, 7))
+            touch._add(eight=CapTouchInput(3, 8))
+
+    # Check for the existence of the ADC
+    # to determine if we're running Pro
+
+        analog = ObjectCollection()
+        motor = ObjectCollection()
+        if is_explorer_pro() or is_explorer_phat():
+            motor._add(one=Motor(M1F, M1B))
+            motor._add(two=Motor(M2F, M2B))
+
+        if has_analog:
+            analog._add(one=AnalogInput(3))
+            analog._add(two=AnalogInput(2))
+            analog._add(three=AnalogInput(1))
+            analog._add(four=AnalogInput(0))
+
+    except RuntimeError:
+        raise RuntimeError("YOu must be root to use Explorer HAT!")
+        ready = False
 
 
 _help = {
