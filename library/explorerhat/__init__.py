@@ -47,7 +47,9 @@ analog = None
 touch = None
 motor = None
 
+_cap1208 = None
 _quiet = False
+_is_setup = False
 
 # Assume A+, B+ and no funny business
 
@@ -764,19 +766,19 @@ def explorerhat_exit():
     if not _quiet:
         print("Goodbye!")
 
-def setup(*args, **kwargs):
-    _setup(*args, **kwargs)
 
-def _setup(quiet=False):
+def setup(quiet=False):
     """Setup Explorer HAT or pHAT"""
 
-    global _cap1208, setup, settings, light, output, input, touch, analog, motor
+    global _cap1208, _is_setup, settings, light, output, input, touch, analog, motor
     global _quiet, has_captouch, has_analog, explorer_pro, explorer_phat
 
     _quiet = quiet
 
-    def setup(*args, **kwargs):
-        return True
+    if _is_setup:
+        raise RuntimeError("Setup has already run,\nplease call explorerhat.setup() before any other method.")
+
+    _is_setup = True
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
