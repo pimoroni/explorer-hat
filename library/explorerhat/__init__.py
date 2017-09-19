@@ -95,7 +95,7 @@ class Default():
         self._parent = None
 
     def _ensure_setup(self):
-        ensure_setup()
+        setup()
         self._parent = globals()[self._parent_name]
 
     def __iter__(self):
@@ -764,16 +764,19 @@ def explorerhat_exit():
     if not _quiet:
         print("Goodbye!")
 
-ensure_setup = lambda: setup()
+def setup(*args, **kwargs):
+    _setup(*args, **kwargs)
 
-def setup(quiet=False):
+def _setup(quiet=False):
     """Setup Explorer HAT or pHAT"""
 
-    global _cap1208, ensure_setup, settings, light, output, input, touch, analog, motor
+    global _cap1208, setup, settings, light, output, input, touch, analog, motor
     global _quiet, has_captouch, has_analog, explorer_pro, explorer_phat
 
     _quiet = quiet
-    ensure_setup = lambda: True
+
+    def setup(*args, **kwargs):
+        return True
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
@@ -862,6 +865,8 @@ def setup(quiet=False):
     except RuntimeError:
         raise RuntimeError("YOu must be root to use Explorer HAT!")
         ready = False
+
+    return True
 
 
 _help = {
