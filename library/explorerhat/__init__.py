@@ -105,7 +105,7 @@ def setup():
     setup_captouch()
     setup_analog()
 
-def setup_gpio(pin=None, mode=None, initial=0, pull_up_down=GPIO.PUD_OFF):
+def setup_gpio(pin=None, mode=None, initial=0):
     global _gpio_is_setup
 
     if not _gpio_is_setup:
@@ -115,7 +115,10 @@ def setup_gpio(pin=None, mode=None, initial=0, pull_up_down=GPIO.PUD_OFF):
         atexit.register(explorerhat_exit)
 
     if pin is not None and mode is not None:
-        GPIO.setup(pin, mode, initial=initial, pull_up_down=pull_up_down)
+        if mode == GPIO.OUT:
+            GPIO.setup(pin, mode, initial=initial)
+        else:
+            GPIO.setup(pin, mode)
 
 def setup_captouch():
     global _captouch_is_setup, has_captouch, _cap1208
@@ -249,7 +252,7 @@ class Pin(object):
     def __call__(self):
         return filter(lambda x: x[0] != '_', dir(self))
 
-    def _setup_gpio():
+    def _setup_gpio(self):
         if self._is_gpio_setup:
             return True
 
@@ -393,6 +396,8 @@ class Input(Pin):
                 self.handle_released(self)
             if callable(self.handle_changed):
                 self.handle_changed(self)
+
+        self._setup_gpio()
         GPIO.add_event_detect(self.pin, GPIO.BOTH, callback=handle_callback, bouncetime=bouncetime)
         self.has_callback = True
         return True
@@ -408,7 +413,8 @@ class Input(Pin):
         return True
 
     def clear_events(self):
-        GPIO.remove_event_detect(self.pin)
+        if self._is_gpio_setup():
+            GPIO.remove_event_detect(self.pin)
         self.has_callback = False
 
     # Alias handlers
