@@ -664,7 +664,7 @@ class AnalogInput(object):
 
     def read(self):
         if not setup_analog():
-            RuntimeError("Analog is unavailable, check your pHAT/HAT and/or connections!")
+            raise RuntimeError("Analog is unavailable, check your pHAT/HAT and/or connections!")
         return read_se_adc(self.channel)
 
     def sensitivity(self, sensitivity):
