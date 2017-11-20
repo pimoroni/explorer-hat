@@ -5,31 +5,35 @@ API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 import atexit
 import signal
 import time
-from sys import exit, version_info
+from sys import version_info
 
 try:
     from smbus import SMBus
 except ImportError:
     if version_info[0] < 3:
-        exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
+        raise ImportError("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
     elif version_info[0] == 3:
-        exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+        raise ImportError("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
 
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    exit("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
+    raise ImportError("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
 
 try:
     from cap1xxx import Cap1208
 except ImportError:
-    exit("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
+    raise ImportError("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
 
-from .ads1015 import read_se_adc, adc_available 
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
 
 
 __version__ = '0.4.2'
+
+_verbose = False
+_gpio_is_setup = False
+_analog_is_setup = False
+_captouch_is_setup = False
 
 explorer_pro = False
 explorer_phat = False
@@ -74,6 +78,95 @@ CAP_PRODUCT_ID = 107
 
 def help(topic=None):
     return _help[topic]
+
+def set_verbose(value):
+    global _verbose
+    _verbose = value
+
+def explorerhat_exit():
+    if _verbose: print("\nExplorer HAT exiting cleanly, please wait...")
+
+    if _verbose: print("Stopping flashy things...")
+    output.stop()
+    input.stop()
+    light.stop()
+    light.stop_pulse()
+
+    if _verbose: print("Stopping user tasks...")
+    async_stop_all()
+
+    if _verbose: print("Cleaning up...")
+    GPIO.cleanup()
+
+    if _verbose: print("Goodbye!")
+
+def setup():
+    setup_gpio()
+    setup_captouch()
+    setup_analog()
+
+def setup_gpio(pin=None, mode=None, initial=0):
+    global _gpio_is_setup
+
+    if not _gpio_is_setup:
+        _gpio_is_setup = True
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        atexit.register(explorerhat_exit)
+
+    if pin is not None and mode is not None:
+        if mode == GPIO.OUT:
+            GPIO.setup(pin, mode, initial=initial)
+        else:
+            GPIO.setup(pin, mode)
+
+def setup_captouch():
+    global _captouch_is_setup, has_captouch, _cap1208
+
+    if _captouch_is_setup:
+        return has_captouch
+
+    _captouch_is_setup = True
+
+    try:
+        _cap1208 = Cap1208()
+        has_captouch = True
+    except IOError:
+        has_captouch = False
+
+    return has_captouch
+
+def setup_analog():
+    global _analog_is_setup, adc_available, read_se_adc, has_analog
+
+    if _analog_is_setup:
+        return has_analog
+
+    _analog_is_setup = True
+
+    from .ads1015 import read_se_adc, adc_available 
+
+    if adc_available:
+        has_analog = True
+    else:
+        has_analog = False
+
+    return has_analog
+
+def is_explorer_pro():
+    setup_analog()
+    setup_captouch()
+    return has_captouch and has_analog
+
+def is_explorer_basic():
+    setup_analog()
+    setup_captouch()
+    return has_captouch and not has_analog
+
+def is_explorer_phat():
+    setup_analog()
+    setup_captouch()
+    return has_analog and not has_captouch
 
 
 class Pulse(StoppableThread):
@@ -146,16 +239,25 @@ class Pin(object):
     Pin contains methods that apply to both inputs and outputs"""
     type = 'Pin'
 
-    def __init__(self, pin):
+    def __init__(self, pin, mode=GPIO.IN):
         self.pin = pin
-        self.last = self.read()
+        self.mode = mode
+        self.last = GPIO.LOW
         self.handle_change = False
         self.handle_high = False
         self.handle_low = False
+        self._is_gpio_setup = False
 
     # Return a tidy list of  all "public" methods
     def __call__(self):
         return filter(lambda x: x[0] != '_', dir(self))
+
+    def _setup_gpio(self):
+        if self._is_gpio_setup:
+            return True
+
+        self._is_gpio_setup = True
+        setup_gpio(self.pin, self.mode)
 
     def has_changed(self):
         if self.read() != self.last:
@@ -170,6 +272,7 @@ class Pin(object):
         return self.read() == 1
 
     def read(self):
+        self._setup_gpio()
         return GPIO.input(self.pin)
 
     def stop(self):
@@ -197,9 +300,15 @@ class Motor(object):
         self.pin_fw = pin_fw
         self.pin_bw = pin_bw
         self._speed = 0
+        self._gpio_is_setup = False
 
-        GPIO.setup(self.pin_fw, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.pin_bw, GPIO.OUT, initial=GPIO.LOW)
+    def _setup_gpio(self):
+        if self._gpio_is_setup:
+            return
+
+        self._gpio_is_setup = True
+        setup_gpio(self.pin_fw, GPIO.OUT, initial=GPIO.LOW)
+        setup_gpio(self.pin_bw, GPIO.OUT, initial=GPIO.LOW)
 
         self.pwm_fw = GPIO.PWM(self.pin_fw, 100)
         self.pwm_fw.start(0)
@@ -230,6 +339,8 @@ class Motor(object):
             self.speed(-speed)
 
     def speed(self, speed=100):
+        self._setup_gpio()
+
         if speed > 100 or speed < -100:
             raise ValueError("Speed must be between -100 and 100")
 
@@ -266,12 +377,8 @@ class Input(Pin):
         self.handle_released = None
         self.handle_changed = None
         self.has_callback = False
-        if self.type == 'Button':
-            GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        else:
-            GPIO.setup(pin, GPIO.IN)
 
-        super(Input, self).__init__(pin)
+        super(Input, self).__init__(pin, GPIO.IN)
 
     def on_high(self, callback, bouncetime=DEBOUNCE_TIME):
         self.handle_pressed = callback
@@ -289,6 +396,8 @@ class Input(Pin):
                 self.handle_released(self)
             if callable(self.handle_changed):
                 self.handle_changed(self)
+
+        self._setup_gpio()
         GPIO.add_event_detect(self.pin, GPIO.BOTH, callback=handle_callback, bouncetime=bouncetime)
         self.has_callback = True
         return True
@@ -304,7 +413,8 @@ class Input(Pin):
         return True
 
     def clear_events(self):
-        GPIO.remove_event_detect(self.pin)
+        if self._is_gpio_setup():
+            GPIO.remove_event_detect(self.pin)
         self.has_callback = False
 
     # Alias handlers
@@ -321,10 +431,7 @@ class Output(Pin):
     type = 'Output'
 
     def __init__(self, pin):
-        GPIO.setup(pin, GPIO.OUT, initial=0)
-        super(Output, self).__init__(pin)
-        self.gpio_pwm = GPIO.PWM(pin, PULSE_FREQUENCY)
-        self.gpio_pwm.start(0)
+        super(Output, self).__init__(pin, GPIO.OUT)
 
         self.pulser = Pulse(self, 0, 0, 0, 0)
         self.blinking = False
@@ -332,9 +439,19 @@ class Output(Pin):
         self.fading = False
         self.fader = None
         self._value = 0
+        self.gpio_pwm = None
+
+    def _setup_gpio(self):
+        if self._is_gpio_setup:
+            return True
+
+        setup_gpio(self.pin, self.mode)
+        self.gpio_pwm = GPIO.PWM(self.pin, PULSE_FREQUENCY)
+        self.gpio_pwm.start(0)
 
     def __del__(self):
-        self.gpio_pwm.stop()
+        if self.gpio_pwm is not None:
+            self.gpio_pwm.stop()
         Pin.__del__(self)
 
     def fade(self, start, end, duration):
@@ -437,7 +554,6 @@ class Output(Pin):
     def pwm(self, freq, duty_cycle=50):
         self.gpio_pwm.ChangeDutyCycle(duty_cycle)
         self.gpio_pwm.ChangeFrequency(freq)
-        #self.gpio_pwm.start(duty_cycle)
         return True
 
     def frequency(self, freq):
@@ -450,6 +566,8 @@ class Output(Pin):
 
     def stop(self):
         """Spops all animation"""
+        self._setup_gpio()
+
         if self.fading:
             self.fader.stop()
             self.fading = False
@@ -461,14 +579,10 @@ class Output(Pin):
         if self.blinking:
             self.blinking = False
 
-        #self.gpio_pwm.stop()
-        #time.sleep(0.01)
         if self._value:
             self.duty_cycle(100)
         else:
             self.duty_cycle(0)
-
-        #GPIO.output(self.pin, self._value)
 
         return True
 
@@ -496,9 +610,6 @@ class Output(Pin):
 
         self.frequency(PULSE_FREQUENCY)
 
-        #print("Writing {} to pin {}".format(value, self.pin))
-
-        # GPIO.output(self.pin, value)
         if self._value:
             self.duty_cycle(100)
         else:
@@ -552,6 +663,8 @@ class AnalogInput(object):
         self._handler = None
 
     def read(self):
+        if not setup_analog():
+            raise RuntimeError("Analog is unavailable, check your pHAT/HAT and/or connections!")
         return read_se_adc(self.channel)
 
     def sensitivity(self, sensitivity):
@@ -591,8 +704,19 @@ class CapTouchInput(object):
         self._held = False
         self.channel = channel
         self.handlers = {'press': None, 'release': None, 'held': None}
-        for event in ['press', 'release', 'held']:
-            _cap1208.on(channel=self.channel, event=event, handler=self._handle_state)
+        self._captouch_is_setup = False
+
+    def _setup_captouch(self):
+        if self._captouch_is_setup:
+            return has_captouch
+
+        self._captouch_is_setup = True
+
+        if setup_captouch():
+            for event in ['press', 'release', 'held']:
+                _cap1208.on(channel=self.channel, event=event, handler=self._handle_state)
+
+        return has_captouch
 
     def _handle_state(self, channel, event):
         if channel == self.channel:
@@ -607,18 +731,33 @@ class CapTouchInput(object):
                 self.handlers[event](self.alias, event)
 
     def is_pressed(self):
+        if not self._setup_captouch():
+            raise RuntimeError("Touch is unavailable, check your pHAT/HAT and/or connections!")
+
         return self._pressed
 
     def is_held(self):
+        if not self._setup_captouch():
+            raise RuntimeError("Touch is unavailable, check your pHAT/HAT and/or connections!")
+
         return self._held
 
     def pressed(self, handler):
+        if not self._setup_captouch():
+            raise RuntimeError("Touch is unavailable, check your pHAT/HAT and/or connections!")
+
         self.handlers['press'] = handler
 
     def released(self, handler):
+        if not self._setup_captouch():
+            raise RuntimeError("Touch is unavailable, check your pHAT/HAT and/or connections!")
+
         self.handlers['release'] = handler
 
     def held(self, handler):
+        if not self._setup_captouch():
+            raise RuntimeError("Touch is unavailable, check your pHAT/HAT and/or connections!")
+
         self.handlers['held'] = handler
 
 running = False
@@ -631,12 +770,10 @@ def async_start(name, function):
     workers[name].start()
     return True
 
-
 def async_stop(name):
     global workers
     workers[name].stop()
     return True
-
 
 def async_stop_all():
     global workers
@@ -644,7 +781,6 @@ def async_stop_all():
         print("Stopping user task: " + worker)
         workers[worker].stop()
     return True
-
 
 def set_timeout(function, seconds):
     def fn_timeout():
@@ -655,10 +791,8 @@ def set_timeout(function, seconds):
     timeout.start()
     return True
 
-
 def pause():
     signal.pause()
-
 
 def loop(callback):
     global running
@@ -666,120 +800,53 @@ def loop(callback):
     while running:
         callback()
 
-
 def stop():
     global running
     running = False
     return True
 
 
-def is_explorer_pro():
-    return explorer_pro
+settings = ObjectCollection()
+settings._add(touch=CapTouchSettings())
 
-def is_explorer_phat():
-    return explorer_phat
+light = ObjectCollection()
+light._add(blue=Light(LED1))
+light._add(yellow=Light(LED2))
+light._add(red=Light(LED3))
+light._add(green=Light(LED4))
+light._alias(amber='yellow')
 
-def explorerhat_exit():
-    print("\nExplorer HAT exiting cleanly, please wait...")
+output = ObjectCollection()
+output._add(one=Output(OUT1))
+output._add(two=Output(OUT2))
+output._add(three=Output(OUT3))
+output._add(four=Output(OUT4))
 
-    print("Stopping flashy things...")
-    output.stop()
-    input.stop()
-    light.stop()
-    light.stop_pulse()
+input = ObjectCollection()
+input._add(one=Input(IN1))
+input._add(two=Input(IN2))
+input._add(three=Input(IN3))
+input._add(four=Input(IN4))
 
-    print("Stopping user tasks...")
-    async_stop_all()
+touch = ObjectCollection()
+touch._add(one=CapTouchInput(4, 1))
+touch._add(two=CapTouchInput(5, 2))
+touch._add(three=CapTouchInput(6, 3))
+touch._add(four=CapTouchInput(7, 4))
+touch._add(five=CapTouchInput(0, 5))
+touch._add(six=CapTouchInput(1, 6))
+touch._add(seven=CapTouchInput(2, 7))
+touch._add(eight=CapTouchInput(3, 8))
 
-    print("Cleaning up...")
-    GPIO.cleanup()
+motor = ObjectCollection()
+motor._add(one=Motor(M1F, M1B))
+motor._add(two=Motor(M2F, M2B))
 
-    print("Goodbye!")
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-
-try:
-    _cap1208 = Cap1208()
-    has_captouch = True
-except IOError:
-    has_captouch = False
-
-if adc_available:
-    has_analog = True
-else:
-    has_analog = False
-
-
-if has_captouch and has_analog:
-    print("Explorer HAT Pro detected...")
-    explorer_pro = True
-
-elif has_captouch and not has_analog:
-    print("Explorer HAT Basic detected...")
-
-elif has_analog and not has_captouch:
-    print("Explorer pHAT detected...")
-    explorer_phat = True
-
-else:
-    exit("Warning, could not find Analog or Touch...\nPlease check your i2c settings!")
-
-atexit.register(explorerhat_exit)
-
-try:
-    settings = ObjectCollection()
-    settings._add(touch=CapTouchSettings())
-
-    light = ObjectCollection()
-    light._add(blue=Light(LED1))
-    light._add(yellow=Light(LED2))
-    light._add(red=Light(LED3))
-    light._add(green=Light(LED4))
-    light._alias(amber='yellow')
-
-    output = ObjectCollection()
-    output._add(one=Output(OUT1))
-    output._add(two=Output(OUT2))
-    output._add(three=Output(OUT3))
-    output._add(four=Output(OUT4))
-
-    input = ObjectCollection()
-    input._add(one=Input(IN1))
-    input._add(two=Input(IN2))
-    input._add(three=Input(IN3))
-    input._add(four=Input(IN4))
-
-
-    touch = ObjectCollection()
-    if has_captouch:
-        touch._add(one=CapTouchInput(4, 1))
-        touch._add(two=CapTouchInput(5, 2))
-        touch._add(three=CapTouchInput(6, 3))
-        touch._add(four=CapTouchInput(7, 4))
-        touch._add(five=CapTouchInput(0, 5))
-        touch._add(six=CapTouchInput(1, 6))
-        touch._add(seven=CapTouchInput(2, 7))
-        touch._add(eight=CapTouchInput(3, 8))
-
-# Check for the existence of the ADC
-# to determine if we're running Pro
-
-    analog = ObjectCollection()
-    motor = ObjectCollection()
-    if is_explorer_pro() or is_explorer_phat():
-        motor._add(one=Motor(M1F, M1B))
-        motor._add(two=Motor(M2F, M2B))
-
-    if has_analog:
-        analog._add(one=AnalogInput(3))
-        analog._add(two=AnalogInput(2))
-        analog._add(three=AnalogInput(1))
-        analog._add(four=AnalogInput(0))
-except RuntimeError:
-    print("YOu must be root to use Explorer HAT!")
-    ready = False
-
+analog = ObjectCollection()
+analog._add(one=AnalogInput(3))
+analog._add(two=AnalogInput(2))
+analog._add(three=AnalogInput(1))
+analog._add(four=AnalogInput(0))
 
 _help = {
     'index': '''Call with "explorerhat.help(topic)" for help with:
