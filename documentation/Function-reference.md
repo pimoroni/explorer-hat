@@ -126,8 +126,18 @@ Each light includes all of the functionality of an output. See above.
 * `changed( handler_function, sensitivity )` - Calls "handler_function" when a change greater than the threshold (in volts) occurs
 
 ### Motor ( Explorer HAT Pro and pHAT only )
+The two motors are named "one" and "two" and can be called like so:
+```python
+explorerhat.motor.one
+explorerhat.motor.two
+```
+You can control all motors with one instruction:
+```python
+explorer.motor.forwards()
+```
 
 * `invert()` - Reverses the direction of forwards for this motor
 * `forwards( speed )` - Turns the motor "forwards" at speed ( default 100% )
 * `backwards( speed )` - Turns the motor "backwards" at speed ( default 100% )
 * `speed(-100 to 100)` - Moves the motor at speed, from full backwards to full forwards
+* `stop()` - Stops the motor by setting its speed to 0
