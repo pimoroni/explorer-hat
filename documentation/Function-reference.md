@@ -49,7 +49,7 @@ Calls "handler_function" whenever the pad is touched.
 The handler function should accept two things, a channel ( the number of the pad ) and an event ( whether it's pressed/released ) and look something like this:
 
 ```python
-def handle(channel, event)
+def handle(channel, event):
     print("Got {} on {}".format(event, channel))
 ```
 
