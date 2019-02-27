@@ -57,7 +57,7 @@ Output 4 | GPIO 16
 
 ### Inputs, via SN74LVC125APWR (5V tolerant input buffer)
 
-Explorer HAT/pHAT has four protected inputs. These are just like normal input pins on your Pi, except they can tolerate 5V.
+Explorer HAT/pHAT has four protected inputs. These are just like normal input pins on your Pi, except they can tolerate 5V and cannot be pulled up/down from the Pi.
 
 Input    | GPIO pin
 ---------|-----------
@@ -65,6 +65,8 @@ Input 1  | GPIO 23
 Input 2  | GPIO 22
 Input 3  | GPIO 24
 Input 4  | GPIO 25
+
+Since the Pi's GPIO pin is after the buffer, input signals will not be pulled up or down by enabling the Pi's onboard pull resistors. For applications where you need a pull resistor you *must* substitute an external resistor between an Input and either Ground or +5V.
 
 ### Motor, via DRV8833PWP ( Explorer HAT Pro and pHAT only )
 
