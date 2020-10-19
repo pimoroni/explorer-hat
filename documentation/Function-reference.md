@@ -56,7 +56,7 @@ def handle(channel, event):
 An event of `press` indicates the touch pad was pressed, and an event of `release` indicates it was released.
 
 ```python
-explorerhat.touch.released( handler_funtion )
+explorerhat.touch.released( handler_function )
 ```
 
 Calls "handler_function" whenever the pad is released. The handler function is the same as described above.
