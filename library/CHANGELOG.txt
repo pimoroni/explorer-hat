@@ -1,3 +1,11 @@
+0.5.0
+-----
+
+* Refactor library setup()
+* Raise ImportError instead of hard exit
+* Add support for ADS1115 variant
+* Fix Syntax Warning
+
 0.4.2
 -----
 
