@@ -10,6 +10,12 @@ except ImportError:
         exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
 
 
+try:
+    ADS1015TimeoutError = TimeoutError
+except NameError:
+    from socket import timeout as ADS1015TimeoutError
+
+
 adc_available = True
 
 
@@ -42,7 +48,7 @@ def busy():
     return (status & (1 << 15)) == 0
 
 
-def read_se_adc(channel=1):
+def read_se_adc(channel=1, timeout=5.0):
     programmable_gain = PGA_6_144V
     samples_per_second = 250
 
@@ -69,6 +75,8 @@ def read_se_adc(channel=1):
     while busy():
         # We've got a lock on the I2S bus, but probably don't want to hog it!
         time.sleep(1.0 / 160)
+        if time.time() - t_start > timeout:
+            raise ADS1015TimeoutError("Timed out waiting for conversion.")
 
     t_end = time.time()
     t_elapsed = t_end - t_start
