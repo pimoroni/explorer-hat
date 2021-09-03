@@ -28,7 +28,7 @@ except ImportError:
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
 
 
-__version__ = '0.4.2'
+__version__ = '0.5.0'
 
 _verbose = False
 _gpio_is_setup = False
@@ -448,6 +448,7 @@ class Output(Pin):
         setup_gpio(self.pin, self.mode)
         self.gpio_pwm = GPIO.PWM(self.pin, PULSE_FREQUENCY)
         self.gpio_pwm.start(0)
+        self._is_gpio_setup = True
 
     def __del__(self):
         if self.gpio_pwm is not None:
@@ -602,7 +603,7 @@ class Output(Pin):
         self.duty_cycle(value)
 
     def write(self, value):
-        if value is not True and value is not False and value is not 1 and value is not 0:
+        if value not in [True, False]:
             raise ValueError("You must write a value of 1/True or 0/False")
 
         self.stop()

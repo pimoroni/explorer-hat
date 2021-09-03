@@ -36,7 +36,16 @@ PGA_0_512V = 512
 PGA_0_256V = 256
 
 
-def read_se_adc(channel=1, programmable_gain=PGA_6_144V, samples_per_second=1600):
+def busy():
+    data = i2c.read_i2c_block_data(address, REG_CFG)
+    status = (data[0] << 8) | data[1]
+    return (status & (1 << 15)) == 0
+
+
+def read_se_adc(channel=1):
+    programmable_gain = PGA_6_144V
+    samples_per_second = 250
+
     # sane defaults
     config = 0x0003 | 0x0100
 
@@ -50,12 +59,45 @@ def read_se_adc(channel=1, programmable_gain=PGA_6_144V, samples_per_second=1600
     # write single conversion flag
     i2c.write_i2c_block_data(address, REG_CFG, [(config >> 8) & 0xFF, config & 0xFF])
 
-    delay = (1.0 / samples_per_second) + 0.0001
-    time.sleep(delay)
+    # Time the ADC conversion to disambiguate ADS1015 from ADS1115
+    # Genius out of the box thinking by Niko
+    # the ADS1015 will run this at 250SPS
+    # the ADS1115 will run this at 16!!! SPS
+    # Since the difference is ~an order of magnitude~ they're easy to tell apart.
+    t_start = time.time()
+
+    while busy():
+        # We've got a lock on the I2S bus, but probably don't want to hog it!
+        time.sleep(1.0 / 160)
+
+    t_end = time.time()
+    t_elapsed = t_end - t_start
 
     data = i2c.read_i2c_block_data(address, REG_CONV)
 
-    return (((data[0] << 8) | data[1]) >> 4) * programmable_gain / 2048.0 / 1000.0
+    if t_elapsed < 1.0 / 16: # 1/16th second is ADS1115 speed, if it's faster it must be an ADS1015
+        # 12-bit
+        value = (data[0] << 4) | (data[1] >> 4)
+
+        if value & 0x800:  # Check and apply sign bit
+            value -= 1 << 12
+
+        value /= 2047.0  # Divide by full scale range
+
+    else: # If it's slower than "ideal" ADS1115 then it's an ADS1115
+        # 16-bit
+        value = (data[0] << 8) | data[1]
+
+        if value & 0x8000:  # Check and apply sign bit
+            value -= 1 << 16
+
+        value /= 32767.0  # Divide by full scale rane
+
+    value *= float(programmable_gain)  # Multiply by gain
+    value /= 1000.0  # Scale from mV to V
+    value = max(0, value)  # Sweep negative voltages under the rug
+
+    return value
 
 
 try:
