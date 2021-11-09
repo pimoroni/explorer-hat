@@ -50,5 +50,5 @@ setup(
     url         = 'http://shop.pimoroni.com',
     classifiers = classifiers,
     packages    = ['explorerhat'],
-    install_requires= ['cap1xxx']
+    install_requires= ['cap1xxx>=0.1.4']
 )

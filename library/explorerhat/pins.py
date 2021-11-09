@@ -11,13 +11,19 @@ class StoppableThread(threading.Thread):
         self.stop_event = threading.Event()
         self.daemon = True
 
+    def alive(self):
+        try:
+            return self.isAlive()
+        except AttributeError:
+            return self.is_alive()
+
     def start(self):
-        if not self.isAlive():
+        if not self.alive():
             self.stop_event.clear()
             threading.Thread.start(self)
 
     def stop(self):
-        if self.isAlive():
+        if self.alive():
             self.stop_event.set()
             self.join()
 
