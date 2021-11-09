@@ -28,7 +28,7 @@ except ImportError:
 from .pins import ObjectCollection, AsyncWorker, StoppableThread
 
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 _verbose = False
 _gpio_is_setup = False

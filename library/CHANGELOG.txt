@@ -1,3 +1,8 @@
+0.5.1
+-----
+
+* Fix Python 3.9 support for Thread.is_alive()
+
 0.5.0
 -----
 

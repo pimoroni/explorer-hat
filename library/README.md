@@ -91,6 +91,11 @@ The 4 outputs on Explorer can sink 5V, but not source. This means you need to co
 
 # Changelog
 
+0.5.1
+-----
+
+* Fix Python 3.9 support for Thread.is_alive()
+
 0.5.0
 -----
 
