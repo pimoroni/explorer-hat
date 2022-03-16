@@ -1,6 +1,6 @@
 ![Explorer HAT/pHAT](explorer-hat.png)
-https://shop.pimoroni.com/products/explorer-hat
-https://shop.pimoroni.com/products/explorer-phat
+https://shop.pimoroni.com/products/explorer-hat  
+https://shop.pimoroni.com/products/explorer-phat  
 
 The Explorer HAT and Explorer pHAT have a heap of useful input and output options that will take your Raspberry Pi projects to the next level. Great for driving motors, using analog sensors, interfacing with 5V systems, and touch interfaces.
 
@@ -20,55 +20,33 @@ In the new terminal window type the command exactly as it appears below (check f
 curl https://get.pimoroni.com/explorerhat | bash
 ```
 
-Alternatively, on Raspbian, you can download the `pimoroni-dashboard` and install your product by browsing to the relevant entry:
-
-```bash
-sudo apt-get install pimoroni
-```
-(you will find the Dashboard under 'Accessories' too, in the Pi menu - or just run `pimoroni-dashboard` at the command line)
-
-If you choose to download examples you'll find them in `/home/pi/Pimoroni/explorerhat/`.
-
 ### Manual install:
 
-#### Library install for Python 3:
-
-on Raspbian:
+Enable i2c:
 
 ```bash
-sudo apt-get install python3-explorerhat
+sudo raspi-config nonint do_i2c 0
 ```
 
-other environments:
+Install the library:
 
 ```bash
-sudo pip3 install explorerhat
-```
-
-#### Library install for Python 2:
-
-on Raspbian:
-
-```bash
-sudo apt-get install python-explorerhat
-```
-
-other environments:
-
-```bash
-sudo pip2 install explorerhat
+python3 -m pip install --upgrade explorerhat
 ```
 
 ### Development:
 
-If you want to contribute, or like living on the edge of your seat by having the latest code, you should clone this repository, `cd` to the library directory, and run:
+If you want to contribute, or need to run the latest, unreleased code you should clone this repository, `cd` to the library directory, and run:
 
 ```bash
 sudo python3 setup.py install
 ```
-(or `sudo python setup.py install` whichever your primary Python environment may be)
 
-In all cases you will have to enable the i2c bus.
+You will also need to enable the i2c bus:
+
+```bash
+sudo raspi-config nonint do_i2c 0
+```
 
 ## Documentation & Support
 
@@ -76,7 +54,7 @@ In all cases you will have to enable the i2c bus.
 https://learn.pimoroni.com/explorer-hat  
 https://learn.pimoroni.com/explorer-phat  
 * Function reference  
-https://github.com/pimoroni/explorer-hat/blob/master/documentation/  
+https://github.com/pimoroni/explorer-hat/blob/master/documentation/
 * GPIO Pinout  
 https://pinout.xyz/pinout/explorer_hat_pro  
 https://pinout.xyz/pinout/explorer_phat  
@@ -85,7 +63,7 @@ http://forums.pimoroni.com/c/support
 
 ## Important Notes
 
-Explorer HAT/pHAT uses an output driver chip called the ULN2003A, which contains a set of transistor pairs called a Darlington Array. It transforms the small logic signal of the Pi into something capable of driving much bigger loads, such as motors, steppers, lights and more.
+Explorer HAT/pHAT uses an output driver chip called the ULN2003A, which contains a set of transistor pairs called a Darlington Array. It transforms the small logic signal of the Pi into something capable of driving much bigger loads, such as motors, steppers, lights and more. 
 
 The 4 outputs on Explorer can sink 5V, but not source. This means you need to connect your load to one of the 5V pins, and then to the output. When you turn the output on it will connect your circuit to ground, allowing current to flow and your load to turn on. This is the opposite of using a bare Pi GPIO pin, where you might connect to the pin and then to ground; keep this in mind!
 

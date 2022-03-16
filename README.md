@@ -20,55 +20,33 @@ In the new terminal window type the command exactly as it appears below (check f
 curl https://get.pimoroni.com/explorerhat | bash
 ```
 
-Alternatively, on Raspbian, you can download the `pimoroni-dashboard` and install your product by browsing to the relevant entry:
-
-```bash
-sudo apt-get install pimoroni
-```
-(you will find the Dashboard under 'Accessories' too, in the Pi menu - or just run `pimoroni-dashboard` at the command line)
-
-If you choose to download examples you'll find them in `/home/pi/Pimoroni/explorerhat/`.
-
 ### Manual install:
 
-#### Library install for Python 3:
-
-on Raspbian:
+Enable i2c:
 
 ```bash
-sudo apt-get install python3-explorerhat
+sudo raspi-config nonint do_i2c 0
 ```
 
-other environments: 
+Install the library:
 
 ```bash
-sudo pip3 install explorerhat
-```
-
-#### Library install for Python 2:
-
-on Raspbian:
-
-```bash
-sudo apt-get install python-explorerhat
-```
-
-other environments: 
-
-```bash
-sudo pip2 install explorerhat
+python3 -m pip install --upgrade explorerhat
 ```
 
 ### Development:
 
-If you want to contribute, or like living on the edge of your seat by having the latest code, you should clone this repository, `cd` to the library directory, and run:
+If you want to contribute, or need to run the latest, unreleased code you should clone this repository, `cd` to the library directory, and run:
 
 ```bash
 sudo python3 setup.py install
 ```
-(or `sudo python setup.py install` whichever your primary Python environment may be)
 
-In all cases you will have to enable the i2c bus.
+You will also need to enable the i2c bus:
+
+```bash
+sudo raspi-config nonint do_i2c 0
+```
 
 ## Documentation & Support
 
