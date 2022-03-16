@@ -10,11 +10,20 @@ tags: [Explorer HAT, Raspberry Pi, Python, Programming]
 images: [images/tba.png]
 difficulty: Beginner
 -->
-# Explorer HAT Function Reference
+# Explorer HAT Function Reference <!-- omit in toc -->
 
 This reference details all of the available functions on Explorer HAT touch inputs, lights, inputs, outputs, analog inputs and motor driver.
 
-### Touch ( Explorer HAT only )
+- [Touch ( Explorer HAT only )](#touch--explorer-hat-only-)
+  - [Check if a touch pad is being touched or held](#check-if-a-touch-pad-is-being-touched-or-held)
+  - [Call function when pressed](#call-function-when-pressed)
+- [Input](#input)
+- [Output](#output)
+- [Light ( Explorer HAT only )](#light--explorer-hat-only-)
+- [Analog ( Explorer HAT Pro and pHAT only )](#analog--explorer-hat-pro-and-phat-only-)
+- [Motor ( Explorer HAT Pro and pHAT only )](#motor--explorer-hat-pro-and-phat-only-)
+
+## Touch ( Explorer HAT only )
 
 Explorer HAT includes 8 touch pads which act just like buttons. We've fine tuned these to be really responsive, and you can easily use them for entering PIN codes, controlling a project or playing the drums.
 
@@ -27,18 +36,23 @@ explorerhat.touch.two
 explorerhat.touch.eight
 ```
 
-Each touch pad has a number of functions for both reading its state and binding events to certain conditions:
+Each touch pad has a number of functions for both reading its state and binding events to certain conditions.
+
+### Check if a touch pad is being touched or held
 
 ```python
 explorerhat.touch.is_pressed()
 ```
 
-Returns True if the pad is being touched.
+Returns `True` if the pad is being touched.
 
 ```python
 explorerhat.touch.is_held()
 ```
-Returns True if the pad has been held down for some time
+
+Returns `True` if the pad has been held down for some time.
+
+### Call function when pressed
 
 ```python
 explorerhat.touch.pressed( handler_function )
@@ -51,6 +65,8 @@ The handler function should accept two things, a channel ( the number of the pad
 ```python
 def handle(channel, event):
     print("Got {} on {}".format(event, channel))
+
+explorerhat.touch.pressed(handle)
 ```
 
 An event of `press` indicates the touch pad was pressed, and an event of `release` indicates it was released.
@@ -67,7 +83,7 @@ explorerhat.touch.held( handler_function )
 
 Calls "handler_function" repeatedly while the pad is held down ( default once every 540ms )
 
-### Input
+## Input
 
 Explorer HAT/pHAT includes 4 buffered, 5v tolerant inputs. These act just like the GPIO pins on your Pi and don't require any special treatment. When you send a HIGH signal into them, you'll read a HIGH pin state ( 1 ) in Python.
 
@@ -88,6 +104,7 @@ def changed(input):
   
 explorerhat.input.one.changed(changed)
 ```
+
 Then, when you change the input you'll see something like:
 
 ```bash
@@ -95,7 +112,7 @@ Input one changed to 1
 Input one changed to 0
 ```
 
-### Output
+## Output
 
 When you turn Explorer HAT/pHAT outputs on ( logic HIGH ) it will sink current to ground. Be mindful of this when connecting to the output driver- you'll need to connect your device to a voltage supply, and then to the output pin.
 
@@ -108,7 +125,7 @@ When you turn Explorer HAT/pHAT outputs on ( logic HIGH ) it will sink current t
 * `fade( from, to, time )` - Fade from 0-100 to 0-100 brightness over a number of seconds specified by "time"
 * `stop()` - Stops any running blink, fade or pulse action
 
-### Light ( Explorer HAT only )
+## Light ( Explorer HAT only )
 
 There are four lights on Explorer HAT, Yellow, Blue, Red and Green. These are named as such in Python:
 
@@ -120,18 +137,21 @@ explorerhat.light.green
 
 Each light includes all of the functionality of an output. See above.
 
-### Analog ( Explorer HAT Pro and pHAT only )
+## Analog ( Explorer HAT Pro and pHAT only )
 
 * `read()` - Returns the value of the analog input in volts.
 * `changed( handler_function, sensitivity )` - Calls "handler_function" when a change greater than the threshold (in volts) occurs
 
-### Motor ( Explorer HAT Pro and pHAT only )
+## Motor ( Explorer HAT Pro and pHAT only )
+
 The two motors are named "one" and "two" and can be called like so:
+
 ```python
 explorerhat.motor.one
 explorerhat.motor.two
 ```
 You can control all motors with one instruction:
+
 ```python
 explorer.motor.forwards()
 ```
