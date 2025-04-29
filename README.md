@@ -1,6 +1,6 @@
 ![Explorer HAT/pHAT](explorer-hat.png)
-https://shop.pimoroni.com/products/explorer-hat  
-https://shop.pimoroni.com/products/explorer-phat  
+https://shop.pimoroni.com/products/explorer-hat
+https://shop.pimoroni.com/products/explorer-phat
 
 The Explorer HAT and Explorer pHAT have a heap of useful input and output options that will take your Raspberry Pi projects to the next level. Great for driving motors, using analog sensors, interfacing with 5V systems, and touch interfaces.
 
@@ -50,19 +50,19 @@ sudo raspi-config nonint do_i2c 0
 
 ## Documentation & Support
 
-* Guides and tutorials  
-https://learn.pimoroni.com/explorer-hat  
-https://learn.pimoroni.com/explorer-phat  
-* Function reference  
+* Guides and tutorials
+https://learn.pimoroni.com/explorer-hat
+https://learn.pimoroni.com/explorer-phat
+* Function reference
 https://github.com/pimoroni/explorer-hat/blob/master/documentation/
-* GPIO Pinout  
-https://pinout.xyz/pinout/explorer_hat_pro  
-https://pinout.xyz/pinout/explorer_phat  
-* Get help  
-http://forums.pimoroni.com/c/support  
+* GPIO Pinout
+https://pinout.xyz/pinout/explorer_hat_pro
+https://pinout.xyz/pinout/explorer_phat
+* Get help
+http://forums.pimoroni.com/c/support
 
 ## Important Notes
 
-Explorer HAT/pHAT uses an output driver chip called the ULN2003A, which contains a set of transistor pairs called a Darlington Array. It transforms the small logic signal of the Pi into something capable of driving much bigger loads, such as motors, steppers, lights and more. 
+Explorer HAT/pHAT uses an output driver chip called the ULN2003A, which contains a set of transistor pairs called a Darlington Array. It transforms the small logic signal of the Pi into something capable of driving much bigger loads, such as motors, steppers, lights and more.
 
 The 4 outputs on Explorer can sink 5V, but not source. This means you need to connect your load to one of the 5V pins, and then to the output. When you turn the output on it will connect your circuit to ground, allowing current to flow and your load to turn on. This is the opposite of using a bare Pi GPIO pin, where you might connect to the pin and then to ground; keep this in mind!

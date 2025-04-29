@@ -144,7 +144,7 @@ def setup_analog():
 
     _analog_is_setup = True
 
-    from .ads1015 import read_se_adc, adc_available 
+    from .ads1015 import read_se_adc, adc_available
 
     if adc_available:
         has_analog = True

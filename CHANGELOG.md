@@ -1,3 +1,8 @@
+1.0.0
+-----
+
+* Repackage to latest boilerplate
+
 0.5.1
 -----
 
