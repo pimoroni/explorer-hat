@@ -5,25 +5,9 @@ API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 import atexit
 import signal
 import time
-from sys import version_info
 
-try:
-    from smbus import SMBus
-except ImportError:
-    if version_info[0] < 3:
-        raise ImportError("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
-    elif version_info[0] == 3:
-        raise ImportError("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
-
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    raise ImportError("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
-
-try:
-    from cap1xxx import Cap1208
-except ImportError:
-    raise ImportError("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
+import RPi.GPIO as GPIO
+from cap1xxx import Cap1208
 
 from .pins import AsyncWorker, ObjectCollection, StoppableThread
 
@@ -75,29 +59,31 @@ DEBOUNCE_TIME = 20
 CAP_PRODUCT_ID = 107
 
 
-def help(topic=None):
-    return _help[topic]
-
 def set_verbose(value):
     global _verbose
     _verbose = value
 
 def explorerhat_exit():
-    if _verbose: print("\nExplorer HAT exiting cleanly, please wait...")
+    if _verbose:
+        print("\nExplorer HAT exiting cleanly, please wait...")
 
-    if _verbose: print("Stopping flashy things...")
+    if _verbose:
+        print("Stopping flashy things...")
     output.stop()
     input.stop()
     light.stop()
     light.stop_pulse()
 
-    if _verbose: print("Stopping user tasks...")
+    if _verbose:
+        print("Stopping user tasks...")
     async_stop_all()
 
-    if _verbose: print("Cleaning up...")
+    if _verbose:
+        print("Cleaning up...")
     GPIO.cleanup()
 
-    if _verbose: print("Goodbye!")
+    if _verbose:
+        print("Goodbye!")
 
 def setup():
     setup_gpio()

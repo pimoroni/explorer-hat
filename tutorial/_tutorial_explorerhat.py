@@ -1,4 +1,6 @@
-from _tutorial import *
+import time
+
+from _tutorial import add_placeholder, get_input, output, prompt, type_write, type_write_warning, wait_for_space
 
 explorerhat = None
 
@@ -38,7 +40,7 @@ def importme():
 def check_for_pro():
     try:
         explorerhat.analog.one.read()
-    except:
+    except RuntimeError:
         type_write_warning("Uh oh! You need an Explorer HAT Pro!")
         time.sleep(1)
         exit()

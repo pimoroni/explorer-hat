@@ -171,11 +171,11 @@ def play_note(note):
     light its corresponding LED
     """
     note, duration = note
-    f = notes[note][0]
-    l = notes[note][1]
-    explorerhat.light[l].on()
-    tone.note(f, duration)
-    explorerhat.light[l].off()
+    freq = notes[note][0]
+    led = notes[note][1]
+    explorerhat.light[led].on()
+    tone.note(freq, duration)
+    explorerhat.light[led].off()
 
 
 def check_progress():
@@ -185,7 +185,7 @@ def check_progress():
     """
     global steps
     for idx, step in enumerate(steps):
-        if not tunes[current_tune][idx][0] in get_notes(step):
+        if tunes[current_tune][idx][0] not in get_notes(step):
             return False
     return True
 
