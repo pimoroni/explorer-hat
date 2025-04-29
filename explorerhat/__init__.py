@@ -898,7 +898,7 @@ The 4 outputs are named "one" to "four" and can be called like so:
 ''',
     'light':  '''Lights
 
-Explorer HAT includs 4 LEDs; Yellow, Blue, Red and Green
+Explorer HAT includes 4 LEDs; Yellow, Blue, Red and Green
 
 You can call them like so:
 
@@ -909,7 +909,7 @@ You can call them like so:
 ''',
     'analog': '''Analog Inputs
 
-Explorer HAT inclues 4, 5v tolerant analogue inputs.
+Explorer HAT includes 4, 5v tolerant analogue inputs.
 
 The 4 analog inputs are named "one" to "four" and can be called like so:
 
