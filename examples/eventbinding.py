@@ -2,7 +2,6 @@
 
 import explorerhat
 
-
 print("""
 This example shows how you can toggle lights when a button is touched.
 

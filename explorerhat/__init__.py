@@ -25,8 +25,7 @@ try:
 except ImportError:
     raise ImportError("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
 
-from .pins import ObjectCollection, AsyncWorker, StoppableThread
-
+from .pins import AsyncWorker, ObjectCollection, StoppableThread
 
 __version__ = '0.5.1'
 
@@ -144,7 +143,7 @@ def setup_analog():
 
     _analog_is_setup = True
 
-    from .ads1015 import read_se_adc, adc_available
+    from .ads1015 import adc_available, read_se_adc
 
     if adc_available:
         has_analog = True

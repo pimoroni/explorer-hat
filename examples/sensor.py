@@ -9,7 +9,6 @@ import time
 
 import explorerhat
 
-
 print("""
 
 This Python code is for reporting on the

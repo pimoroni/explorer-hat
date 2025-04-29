@@ -10,7 +10,6 @@ except ImportError:
 
 import explorerhat
 
-
 print("""
 This example turns your Explorer HAT into a drum kit!
 

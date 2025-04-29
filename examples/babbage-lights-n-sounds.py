@@ -4,8 +4,8 @@ import random
 import time
 
 from pdtone import PDTone
-import explorerhat
 
+import explorerhat
 
 print("""
 This example tries to re-create the classic pattern copying game Simon.

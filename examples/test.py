@@ -4,7 +4,6 @@ import time
 
 import explorerhat
 
-
 print("""
 This basic example tests the various functions of Explorer HAT,
 touching any of the buttons should output a message, lights should pulse
