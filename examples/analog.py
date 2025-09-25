@@ -4,7 +4,6 @@ import time
 
 import explorerhat
 
-
 print("""
 Basic example reading analog one and two every 1s.
 

@@ -5,30 +5,13 @@ API library for Explorer HAT and Explorer HAT Pro, Raspberry Pi add-on boards"""
 import atexit
 import signal
 import time
-from sys import version_info
 
-try:
-    from smbus import SMBus
-except ImportError:
-    if version_info[0] < 3:
-        raise ImportError("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
-    elif version_info[0] == 3:
-        raise ImportError("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
+import RPi.GPIO as GPIO
+from cap1xxx import Cap1208
 
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    raise ImportError("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
+from .pins import AsyncWorker, ObjectCollection, StoppableThread
 
-try:
-    from cap1xxx import Cap1208
-except ImportError:
-    raise ImportError("This library requires the cap1xxx module\nInstall with: sudo pip install cap1xxx")
-
-from .pins import ObjectCollection, AsyncWorker, StoppableThread
-
-
-__version__ = '0.5.1'
+__version__ = '1.0.0'
 
 _verbose = False
 _gpio_is_setup = False
@@ -76,29 +59,31 @@ DEBOUNCE_TIME = 20
 CAP_PRODUCT_ID = 107
 
 
-def help(topic=None):
-    return _help[topic]
-
 def set_verbose(value):
     global _verbose
     _verbose = value
 
 def explorerhat_exit():
-    if _verbose: print("\nExplorer HAT exiting cleanly, please wait...")
+    if _verbose:
+        print("\nExplorer HAT exiting cleanly, please wait...")
 
-    if _verbose: print("Stopping flashy things...")
+    if _verbose:
+        print("Stopping flashy things...")
     output.stop()
     input.stop()
     light.stop()
     light.stop_pulse()
 
-    if _verbose: print("Stopping user tasks...")
+    if _verbose:
+        print("Stopping user tasks...")
     async_stop_all()
 
-    if _verbose: print("Cleaning up...")
+    if _verbose:
+        print("Cleaning up...")
     GPIO.cleanup()
 
-    if _verbose: print("Goodbye!")
+    if _verbose:
+        print("Goodbye!")
 
 def setup():
     setup_gpio()
@@ -144,7 +129,7 @@ def setup_analog():
 
     _analog_is_setup = True
 
-    from .ads1015 import read_se_adc, adc_available 
+    from .ads1015 import adc_available, read_se_adc
 
     if adc_available:
         has_analog = True
@@ -913,7 +898,7 @@ The 4 outputs are named "one" to "four" and can be called like so:
 ''',
     'light':  '''Lights
 
-Explorer HAT includs 4 LEDs; Yellow, Blue, Red and Green
+Explorer HAT includes 4 LEDs; Yellow, Blue, Red and Green
 
 You can call them like so:
 
@@ -924,7 +909,7 @@ You can call them like so:
 ''',
     'analog': '''Analog Inputs
 
-Explorer HAT inclues 4, 5v tolerant analogue inputs.
+Explorer HAT includes 4, 5v tolerant analogue inputs.
 
 The 4 analog inputs are named "one" to "four" and can be called like so:
 

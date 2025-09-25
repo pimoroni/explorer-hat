@@ -4,7 +4,6 @@
 
 import _tutorial_explorerhat as tutorial
 
-
 tutorial.start([
     "Welcome to Explorer HAT {name}...",
     """In this tutorial we'll introduce you to Analog Inputs.

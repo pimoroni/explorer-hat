@@ -1,13 +1,14 @@
 import atexit
-import colorama
 import sys
 import time
+
+import colorama
 
 try:
     from msvcrt import getch
 except ImportError:
-    import tty
     import termios
+    import tty
 
 
     def getch():

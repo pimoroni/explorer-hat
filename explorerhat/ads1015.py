@@ -1,20 +1,12 @@
 import time
-from sys import exit, version_info
 
-try:
-    from smbus import SMBus
-except ImportError:
-    if version_info[0] < 3:
-        exit("This library requires python-smbus\nInstall with: sudo apt-get install python-smbus")
-    elif version_info[0] == 3:
-        exit("This library requires python3-smbus\nInstall with: sudo apt-get install python3-smbus")
-
+from smbus import SMBus
 
 adc_available = True
 
 
 def i2c_bus_id():
-    revision = ([l[12:-1] for l in open('/proc/cpuinfo', 'r').readlines() if l[:8] == "Revision"] + ['0000'])[0]
+    revision = ([line[12:-1] for line in open('/proc/cpuinfo', 'r').readlines() if line[:8] == "Revision"] + ['0000'])[0]
     return 1 if int(revision, 16) >= 4 else 0
 
 

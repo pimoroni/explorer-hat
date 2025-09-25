@@ -4,7 +4,6 @@
 
 import _tutorial_explorerhat as tutorial
 
-
 tutorial.start([
     "Welcome to Explorer HAT {name}...",
     """In this introduction, we'll show you the basics.

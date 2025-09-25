@@ -100,7 +100,7 @@ class ObjectCollection:
             return handler
 
     def __getitem__(self, key):
-        """Supprot accessing with [n]"""
+        """Support accessing with [n]"""
         if isinstance(key, int):
             return self._all[self._index[key]]
         else:
