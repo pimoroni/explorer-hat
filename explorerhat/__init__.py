@@ -11,7 +11,7 @@ from cap1xxx import Cap1208
 
 from .pins import AsyncWorker, ObjectCollection, StoppableThread
 
-__version__ = '0.5.1'
+__version__ = '1.0.0'
 
 _verbose = False
 _gpio_is_setup = False

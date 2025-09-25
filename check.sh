@@ -40,7 +40,7 @@ done
 inform "Checking $LIBRARY_NAME $LIBRARY_VERSION\n"
 
 inform "Checking for trailing whitespace..."
-if grep -IUrn --color "[[:blank:]]$" --exclude-dir=dist --exclude-dir=.tox --exclude-dir=.git --exclude=PKG-INFO; then
+if grep -IUrn --color "[[:blank:]]$" --exclude-dir=dist -exclude-dir=.venv --exclude-dir=.tox --exclude-dir=.git --exclude=PKG-INFO; then
     warning "Trailing whitespace found!"
     exit 1
 else
@@ -49,7 +49,7 @@ fi
 printf "\n"
 
 inform "Checking for DOS line-endings..."
-if grep -lIUrn --color $'\r' --exclude-dir=dist --exclude-dir=.tox --exclude-dir=.git --exclude=Makefile; then
+if grep -lIUrn --color $'\r' --exclude-dir=dist --exclude-dir=.tox -exclude-dir=.venv --exclude-dir=.git --exclude=Makefile; then
     warning "DOS line-endings found!"
     exit 1
 else
